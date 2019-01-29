@@ -1,6 +1,7 @@
 package isswatcher.manuelweb.at;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -92,7 +93,7 @@ public class MapActivity extends AppCompatActivity {
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //toggle();
+                toggle();
             }
         });
 
@@ -100,6 +101,12 @@ public class MapActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+    }
+
+    public void addObservation(View v)
+    {
+        Intent intent = new Intent(this, AddEditObservationActivity.class);
+        startActivity(intent);
     }
 
     @Override
