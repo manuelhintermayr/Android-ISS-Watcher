@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#9C27B0"
+    android:id="@+id/fullscreen_content"
     tools:context=".AddEditObservationActivity">
 
     <ImageView
@@ -16,7 +17,6 @@
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
     <TextView
-        android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -44,11 +44,12 @@
             tools:ignore="UselessParent">
 
             <Button
-                android:id="@+id/dummy_button"
+                android:id="@+id/back_button"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textColor="#000"
                 android:text="@string/dummy_button" />
 
         </LinearLayout>
