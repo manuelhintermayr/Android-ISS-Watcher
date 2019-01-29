@@ -20,6 +20,19 @@
         android:textSize="50sp"
         android:textStyle="bold" />
 
+    <!--<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </LinearLayout>-->
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:onClick="openMap"
+        android:text="Map" />
+
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <FrameLayout
@@ -37,6 +50,8 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
+
+
             <Button
                 android:id="@+id/dummy_button"
                 style="?metaButtonBarButtonStyle"
@@ -46,6 +61,9 @@
                 android:text="@string/dummy_button" />
 
         </LinearLayout>
+
+
+
     </FrameLayout>
 
 </FrameLayout>
