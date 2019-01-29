@@ -58,6 +58,7 @@ public class MapActivity extends AppCompatActivity {
 
         }
     };
+    private View mControlsView;
     private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
@@ -107,6 +108,11 @@ public class MapActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, AddEditObservationActivity.class);
         startActivity(intent);
+    }
+
+    public void goBack(View v)
+    {
+        finish();
     }
 
     @Override

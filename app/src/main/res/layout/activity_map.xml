@@ -20,26 +20,16 @@
         android:layout_marginTop="50dp"
         android:orientation="vertical" >
 
-        <!--<android.support.design.widget.FloatingActionButton
-            android:id="@+id/floatingActionButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:clickable="true"
-            app:srcCompat="@android:drawable/ic_delete" />-->
-
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:gravity="center"
-
             android:text="@string/map_activity_current_location"
             android:textColor="#fff"
             android:textSize="50dp"
             android:fontFamily="sans-serif" />
-
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapView2"
@@ -63,18 +53,43 @@
                 android:text="@string/map_activity_add_observation"
                 android:textColor="#000" />
 
-            <!--<Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0"
-                android:text="@string/back_button_text"
-                android:gravity="left"/>-->
         </LinearLayout>
 
 
 
 
     </LinearLayout>
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+
+            <Button
+                android:id="@+id/dummy_button"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="goBack"
+                android:textColor="#000"
+                android:text="@string/back_button_text" />
+
+        </LinearLayout>
+
+
+    </FrameLayout>
 
 </FrameLayout>

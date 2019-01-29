@@ -82,7 +82,7 @@
                 android:layout_weight="1"
                 android:onClick="openMap"
                 android:textColor="#000"
-                android:text="MAP" />
+                android:text="@string/launch_activity_exit_application" />
 
         </LinearLayout>
 

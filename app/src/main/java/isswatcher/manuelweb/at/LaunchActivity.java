@@ -16,8 +16,6 @@ import android.widget.Button;
  * status bar and navigation/system bar) with user interaction.
  */
 public class LaunchActivity extends AppCompatActivity {
-    private Button button;
-
 
     /**
      * Whether or not the system UI should be auto-hidden after
