@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#8F00CC"
+    android:background="#9C27B0"
     tools:context=".LaunchActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/space"/>
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -15,9 +21,10 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:keepScreenOn="true"
-        android:text="@string/dummy_content"
-        android:textColor="#33b5e5"
+        android:text="@string/launch_activity_iss_station"
+        android:textColor="#fff"
         android:textSize="50sp"
+        android:fontFamily="sans-serif"
         android:textStyle="bold" />
 
     <!--<LinearLayout
