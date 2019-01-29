@@ -46,7 +46,7 @@ public class MapActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-
+    private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -55,10 +55,9 @@ public class MapActivity extends AppCompatActivity {
             if (actionBar != null) {
                 actionBar.show();
             }
-
+            mControlsView.setVisibility(View.VISIBLE);
         }
     };
-    private View mControlsView;
     private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
@@ -88,6 +87,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         mVisible = true;
+        mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -101,7 +101,7 @@ public class MapActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     public void addObservation(View v)
@@ -139,7 +139,7 @@ public class MapActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        //mControlsView.setVisibility(View.GONE);
+        mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#9C27B0"
+    android:id="@+id/fullscreen_content"
     tools:context=".MapActivity">
 
     <ImageView
@@ -14,7 +15,6 @@
         android:src="@drawable/space"/>
 
     <LinearLayout
-        android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
@@ -78,7 +78,7 @@
 
 
             <Button
-                android:id="@+id/dummy_button"
+                android:id="@+id/back_button"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
