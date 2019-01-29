@@ -1,7 +1,30 @@
 <resources>
     <string name="app_name">ISS Watcher</string>
 
+    <!-- start launch activity -->
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_test">TestActivity</string>
+    <!-- end launch activity -->
+
+    <!-- start map activity -->
+    <string name="map_activity_title">ISS on the map</string>
+    <string name="map_activity_current_location">Current Location</string>
+    <!-- end map activity -->
+
+    <!-- start add/edit observation activity -->
+    <string name="add_edit_observation_activity_title">Add/Edit Observation</string>
+    <string name="add_edit_observation_activity_add_observation">Add Observation</string>
+    <string name="add_edit_observation_activity_edit_observation">Edit Observation</string>
+    <!-- end add/edit observation activity -->
+
+    <!-- start observations activity -->
+    <string name="observations_activity_title">Observations</string>
+    <string name="observations_activity_observations">Observations</string>
+    <!-- end observations activity -->
+
+    <!-- start current location activity -->
+    <string name="current_location_activity_title">Current ISS Location</string>
+    <string name="current_location_current_location">Current Location</string>
+    <!-- end current location activity -->
 </resources>

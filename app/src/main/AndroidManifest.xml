@@ -10,10 +10,34 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".FullscreenActivity"
+            android:name=".CurrentLocationActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/current_location_activity_title"
             android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme"></activity>
+        <activity
+            android:name=".ObservationsActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/observations_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".AddEditObservationActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/add_edit_observation_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".MapActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/map_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".LaunchActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
