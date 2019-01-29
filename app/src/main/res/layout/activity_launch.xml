@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,50 +12,74 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/space"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_marginTop="140px"
-        android:layout_height="540px"
-        android:src="@drawable/station"/>
-
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-
-    <!--<LinearLayout
-        style="?metaButtonBarStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:keepScreenOn="true"
-        android:layout_gravity="center">
-
-        <TextView
-            android:id="@+id/fullscreen_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-
-            android:text="@string/launch_activity_iss_station"
-            android:textColor="#fff"
-            android:textSize="48sp"
-            android:fontFamily="sans-serif"
-            android:textStyle="bold" />
-
-    </LinearLayout>-->
+        android:src="@drawable/space"
+        tools:onClick="openMap" />
 
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:text="@string/launch_activity_iss_station"
-        android:textColor="#fff"
-        android:textSize="48sp"
-        android:fontFamily="sans-serif"
-        android:textStyle="bold" />
+        android:layout_marginTop="50dp"
+        android:orientation="vertical" >
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="124dp"
+            android:layout_weight="0"
+            android:src="@drawable/station" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="center"
+            android:text="@string/launch_activity_iss_station"
+            android:textSize="60dp"
+            android:textColor="#fff"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="@string/launch_activity_current_position"
+                android:textSize="24dp"
+                android:textColor="#fff" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:textSize="24dp"
+                android:text=": "
+                android:textColor="#fff" />
+            <TextView
+                android:id="@+id/currentPosition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:textSize="24dp"
+                android:text="-"
+                android:textColor="#fff" />
+
+            <ImageView
+                android:id="@+id/mapsImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_weight="0"
+                android:src="@drawable/maps"
+                tools:onClick="openMap" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
@@ -80,7 +105,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="openMap"
+                android:onClick="closeApp"
                 android:textColor="#000"
                 android:text="@string/launch_activity_exit_application" />
 

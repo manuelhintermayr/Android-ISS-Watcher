@@ -7,6 +7,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="launch_activity_iss_station">ISS Station</string>
+    <string name="launch_activity_current_position">Current Position</string>
     <string name="launch_activity_exit_application">Exit</string>
     <!-- end launch activity -->
 
