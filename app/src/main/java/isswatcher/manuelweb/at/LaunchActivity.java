@@ -122,6 +122,11 @@ public class LaunchActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goBack(View v)
+    {
+        finish();
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);

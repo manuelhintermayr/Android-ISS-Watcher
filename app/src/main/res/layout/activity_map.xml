@@ -32,7 +32,7 @@
             android:fontFamily="sans-serif" />
 
         <com.google.android.gms.maps.MapView
-            android:id="@+id/mapView2"
+            android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="80" />
@@ -52,14 +52,9 @@
                 android:onClick="addObservation"
                 android:text="@string/map_activity_add_observation"
                 android:textColor="#000" />
-
         </LinearLayout>
 
-
-
-
     </LinearLayout>
-
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -76,7 +71,6 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-
             <Button
                 android:id="@+id/back_button"
                 style="?metaButtonBarButtonStyle"
@@ -88,7 +82,6 @@
                 android:text="@string/back_button_text" />
 
         </LinearLayout>
-
 
     </FrameLayout>
 
