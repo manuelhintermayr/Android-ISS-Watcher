@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ISS Watcher</string>
+    <string name="back_button_text">&lt;</string>
 
     <!-- start launch activity -->
     <string name="dummy_button">Dummy Button</string>
@@ -11,6 +12,7 @@
     <!-- start map activity -->
     <string name="map_activity_title">ISS on the map</string>
     <string name="map_activity_current_location">Current Location</string>
+    <string name="map_activity_add_observation">Add Observation</string>
     <!-- end map activity -->
 
     <!-- start add/edit observation activity -->
