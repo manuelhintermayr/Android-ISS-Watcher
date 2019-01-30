@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ISS Watcher</string>
     <string name="back_button_text">Back</string>
+    <string name="google_maps_API_key">AIzaSyB1ifwaDk-sgWAWkbVKSiyamy0_9ugViH0</string>
 
     <!-- start launch activity -->
     <string name="dummy_button">Dummy Button</string>

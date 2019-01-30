@@ -1,13 +1,22 @@
 package isswatcher.manuelweb.at;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.net.MailTo;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiActivity;
 
 public class MapActivity extends AppCompatActivity {
     /**
@@ -27,6 +36,9 @@ public class MapActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
+    private static final String GOOGLE_MAPS_SERVICES_TAG = "googleMapsService";
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -102,6 +114,35 @@ public class MapActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+
+        isGoogleMapsServiceOkay();
+    }
+
+
+
+    public boolean isGoogleMapsServiceOkay()
+    {
+        Log.d(GOOGLE_MAPS_SERVICES_TAG, "checking if google maps service is okay");
+        int aviable = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapActivity.this);
+        if(aviable == ConnectionResult.SUCCESS)
+        {
+            Log.d(GOOGLE_MAPS_SERVICES_TAG, "google maps service is running");
+            return true;
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(aviable))
+        {
+            Log.d(GOOGLE_MAPS_SERVICES_TAG, "an error occured but it can be fixed by the user");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, aviable, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }
+        else{
+            String errorMessage = "Could not connect to google maps service";
+            Log.d(GOOGLE_MAPS_SERVICES_TAG, errorMessage);
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+        }
+
+        finish();
+        return false;
     }
 
     public void addObservation(View v)

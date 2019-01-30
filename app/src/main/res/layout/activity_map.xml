@@ -8,6 +8,14 @@
     android:id="@+id/fullscreen_content"
     tools:context=".MapActivity">
 
+    <!--<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/map"
+        tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />-->
+
     <ImageView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -52,6 +60,7 @@
                 android:onClick="addObservation"
                 android:text="@string/map_activity_add_observation"
                 android:textColor="#000" />
+
         </LinearLayout>
 
     </LinearLayout>
