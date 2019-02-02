@@ -324,8 +324,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         public void animateToNextMarker()
         {
-            //if (markers.size() >= 2) {
-            if (markers.size() == 8) {
+            if (markers.size() > 0) {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -421,10 +420,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 secondPos = markers.get(markers.size()-1).getPosition();
             }
 
-            setupCameraPositionForMovement(markerPos, secondPos);
+            setupCameraPositionForMovement(markerPos, secondPos, reset);
         }
 
-        private void setupCameraPositionForMovement(LatLng markerPos, LatLng secondPos) {
+        private void setupCameraPositionForMovement(LatLng markerPos, LatLng secondPos, final boolean reset) {
             float bearing = bearingBetweenLatLngs(markerPos, secondPos);
             trackingMarker = mMap.addMarker(new MarkerOptions().position(markerPos)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer)));
@@ -442,9 +441,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         @Override
                         public void onFinish() {
                             System.out.println("finished camera");
-                            Log.e("animator before reset", animator + "");
-                            animator.reset();
-                            Log.e("animator after reset", animator + "");
+                            if(reset)
+                            {
+                                Log.e("animator before reset", animator + "");
+                                animator.reset();
+                                Log.e("animator after reset", animator + "");
+                            }
+                            else{
+                                editLastTwoEntries();
+                            }
                             Handler handler = new Handler();
                             handler.post(animator);
                         }
