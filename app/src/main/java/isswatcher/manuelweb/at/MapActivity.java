@@ -17,8 +17,14 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -41,6 +47,7 @@ public class MapActivity extends AppCompatActivity {
 
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private GoogleMap mMap;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -115,6 +122,11 @@ public class MapActivity extends AppCompatActivity {
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
 
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         isGoogleMapsServiceOkay();
     }
 
@@ -131,13 +143,13 @@ public class MapActivity extends AppCompatActivity {
         }
         else if(GoogleApiAvailability.getInstance().isUserResolvableError(aviable))
         {
-            Log.d(GOOGLE_MAPS_SERVICES_TAG, "an error occured but it can be fixed by the user");
+            Log.e(GOOGLE_MAPS_SERVICES_TAG, "an error occured but it can be fixed by the user");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, aviable, ERROR_DIALOG_REQUEST);
             dialog.show();
         }
         else{
             String errorMessage = "Could not connect to google maps service";
-            Log.d(GOOGLE_MAPS_SERVICES_TAG, errorMessage);
+            Log.e(GOOGLE_MAPS_SERVICES_TAG, errorMessage);
             Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
         }
 
@@ -207,5 +219,15 @@ public class MapActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
