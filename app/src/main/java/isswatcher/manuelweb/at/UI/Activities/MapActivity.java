@@ -74,16 +74,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private Marker selectedMarker;
     private Animator animator = new Animator();
 
-
-    private List<LatLng> polylineList;
-    private Marker marker;
-    private float v;
-    private double lat,lng;
-    private Handler handler;
-    private LatLng starPosition;
-
-
-
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -209,6 +199,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+        IssAutoUpdate issAutoUpdate = new IssAutoUpdate(this);
+        issAutoUpdate.start();
     }
 
     private void toggle() {
@@ -305,6 +297,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });
 
+
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<0;i++)
+                {
+
+                    //Pause(1000); //pause for one second
+                    LatLng newMarker = new LatLng(i*2, i*1.28);
+                    //addMarkerToMap(newMarker);
+
+                }
+            }
+        });
+
     }
 
 
@@ -316,6 +323,46 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .snippet("ISS Position"));
         markers.add(marker);
         return marker;
+    }
+
+    public class IssAutoUpdate extends Thread {
+        MapActivity mainActivity;
+        public double lat;
+        public double lng;
+
+
+        public IssAutoUpdate(MapActivity mainActivity)
+        {
+            this.mainActivity = mainActivity;
+        }
+
+        public void run()
+        {
+
+            for(int i=0;i<100;i++)
+            {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                lat = i*1.58;
+                lng = i*1.24;
+
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        LatLng newMarker = new LatLng(lat, lng);
+                        addMarkerToMap(newMarker);
+                    }
+                });
+
+
+            }
+
+
+        }
     }
 
 
@@ -380,8 +427,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         private void setupCameraPositionForMovement(LatLng markerPos, LatLng secondPos) {
             float bearing = bearingBetweenLatLngs(markerPos, secondPos);
             trackingMarker = mMap.addMarker(new MarkerOptions().position(markerPos)
-                    .title("title")
-                    .snippet("snippet"));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
+                    .title("IS Station")
+                    .snippet("ISS Position"));
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(markerPos)
                     .bearing(bearing + BEARING_OFFSET)
