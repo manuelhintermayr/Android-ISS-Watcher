@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#9C27B0"
     android:id="@+id/fullscreen_content"
-    tools:context=".MapActivity">
+    tools:context=".UI.Activities.MapActivity">
 
     <ImageView
         android:layout_width="fill_parent"

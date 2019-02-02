@@ -1,18 +1,29 @@
-package isswatcher.manuelweb.at;
+package isswatcher.manuelweb.at.UI.Activities;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
-public class CurrentLocationActivity extends AppCompatActivity {
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import isswatcher.manuelweb.at.R;
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -30,8 +41,12 @@ public class CurrentLocationActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
+    private static final String GOOGLE_MAPS_SERVICES_TAG = "googleMapsService";
+    private static final int ERROR_DIALOG_REQUEST = 9001;
+
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private GoogleMap mMap;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -87,12 +102,11 @@ public class CurrentLocationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_current_location);
+        setContentView(R.layout.activity_map);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -106,6 +120,46 @@ public class CurrentLocationActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        isGoogleMapsServiceOkay();
+    }
+
+
+
+    public boolean isGoogleMapsServiceOkay()
+    {
+        Log.d(GOOGLE_MAPS_SERVICES_TAG, "checking if google maps service is okay");
+        int aviable = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapActivity.this);
+        if(aviable == ConnectionResult.SUCCESS)
+        {
+            Log.d(GOOGLE_MAPS_SERVICES_TAG, "google maps service is running");
+            return true;
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(aviable))
+        {
+            Log.e(GOOGLE_MAPS_SERVICES_TAG, "an error occured but it can be fixed by the user");
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, aviable, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }
+        else{
+            String errorMessage = "Could not connect to google maps service";
+            Log.e(GOOGLE_MAPS_SERVICES_TAG, errorMessage);
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+        }
+
+        finish();
+        return false;
+    }
+
+    public void addObservation(View v)
+    {
+        Intent intent = new Intent(this, AddEditObservationActivity.class);
+        startActivity(intent);
     }
 
     public void goBack(View v)
@@ -164,5 +218,15 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }

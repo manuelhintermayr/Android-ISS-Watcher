@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     
     <application
         android:allowBackup="true"
@@ -22,31 +24,31 @@
             android:value="AIzaSyB1ifwaDk-sgWAWkbVKSiyamy0_9ugViH0"/>
 
         <activity
-            android:name=".CurrentLocationActivity"
+            android:name=".UI.Activities.CurrentLocationActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/current_location_activity_title"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme"></activity>
         <activity
-            android:name=".ObservationsActivity"
+            android:name=".UI.Activities.ObservationsActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/observations_activity_title"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name=".AddEditObservationActivity"
+            android:name=".UI.Activities.AddEditObservationActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/add_edit_observation_activity_title"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name=".MapActivity"
+            android:name=".UI.Activities.MapActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/map_activity_title"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme" />
         <activity
-            android:name=".LaunchActivity"
+            android:name=".UI.Activities.LaunchActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:screenOrientation="portrait"

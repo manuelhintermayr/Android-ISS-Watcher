@@ -1,4 +1,4 @@
-package isswatcher.manuelweb.at;
+package isswatcher.manuelweb.at.UI.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -9,10 +9,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import isswatcher.manuelweb.at.R;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
