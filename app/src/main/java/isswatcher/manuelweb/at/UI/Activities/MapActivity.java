@@ -3,6 +3,7 @@ package isswatcher.manuelweb.at.UI.Activities;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,7 +22,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.IssLiveData;
+import isswatcher.manuelweb.at.Services.Models.IssLocation;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
     /**
@@ -223,10 +228,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        LatLng position = new LatLng(0, 0);
+
+        AsyncTask asyncTask = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] objects) {
+
+                LatLng position = new LatLng(0, 0);
+
+                try {
+                    IssLocation currentLocation = IssLiveData.GetIssLocation();
+                    position = new LatLng(
+                            currentLocation.getIssPosition().getLatitude(),
+                            currentLocation.getIssPosition().getLongitude()
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mMap.addMarker(new MarkerOptions().position(position).title("Marker in Sydney"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+                return null;
+            }
+        };
+
+        //asyncTask.execute();
+
+
+        mMap.addMarker(new MarkerOptions().position(position).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+
+
+
+
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
     }
 }
