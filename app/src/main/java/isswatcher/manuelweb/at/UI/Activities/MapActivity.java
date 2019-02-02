@@ -252,30 +252,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         LatLng position = new LatLng(0, 0);
 
 
-        AsyncTask asyncTask = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] objects) {
-
-                LatLng position = new LatLng(0, 0);
-
-                try {
-                    IssLocation currentLocation = IssLiveData.GetIssLocation();
-                    position = new LatLng(
-                            currentLocation.getIssPosition().getLatitude(),
-                            currentLocation.getIssPosition().getLongitude()
-                    );
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
-                        .title("ISS Position"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-
-                return null;
-            }
-        };
-
         //asyncTask.execute();
 
 
@@ -298,19 +274,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
 
 
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i=0;i<0;i++)
-                {
 
-                    //Pause(1000); //pause for one second
-                    LatLng newMarker = new LatLng(i*2, i*1.28);
-                    //addMarkerToMap(newMarker);
-
-                }
-            }
-        });
 
     }
 
@@ -327,9 +291,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     public class IssAutoUpdate extends Thread {
         MapActivity mainActivity;
-        public double lat;
-        public double lng;
-
+        public LatLng position;
 
         public IssAutoUpdate(MapActivity mainActivity)
         {
@@ -339,24 +301,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         public void run()
         {
 
-            for(int i=0;i<100;i++)
+            for(int i=0;i<15;i++)
             {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
-                lat = i*1.58;
-                lng = i*1.24;
+
+                try {
+                    IssLocation currentLocation = IssLiveData.GetIssLocation();
+                    position = new LatLng(
+                            currentLocation.getIssPosition().getLatitude(),
+                            currentLocation.getIssPosition().getLongitude()
+                    );
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        LatLng newMarker = new LatLng(lat, lng);
-                        addMarkerToMap(newMarker);
+                        addMarkerToMap(position);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(position)); //remove afterwards
                     }
                 });
+
 
 
             }
