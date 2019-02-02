@@ -153,11 +153,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
-        //animator.startAnimation(false);
-
-
     }
 
 
@@ -249,42 +244,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        LatLng position = new LatLng(0, 0);
-
-
-        //asyncTask.execute();
-
-
-        mMap.addMarker(new MarkerOptions().position(position)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
-                .title("ISS Position"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-
-
-        // Add a marker in Sydney and move the camera
-
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-
             @Override
             public void onMapClick(LatLng latLng) {
                 addMarkerToMap(latLng);
                 animator.startAnimation(true);
             }
         });
-
-
-
-
     }
-
 
     protected Marker addMarkerToMap(LatLng latLng) {
         Marker marker = mMap.addMarker(new MarkerOptions()
                 .position(latLng)
-                .title("IS Station")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
-                .snippet("ISS Position"));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer)));
         markers.add(marker);
         return marker;
     }
@@ -300,40 +273,50 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         public void run()
         {
-
-            for(int i=0;i<15;i++)
+            for(int i=0;i<40;i++)
             {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-
-                try {
-                    IssLocation currentLocation = IssLiveData.GetIssLocation();
-                    position = new LatLng(
-                            currentLocation.getIssPosition().getLatitude(),
-                            currentLocation.getIssPosition().getLongitude()
-                    );
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        addMarkerToMap(position);
-                        mMap.moveCamera(CameraUpdateFactory.newLatLng(position)); //remove afterwards
-                    }
-                });
-
-
-
+                sleep();
+                updatePosition();
+                addNewMarker();
             }
+        }
 
+        public void sleep()
+        {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
+        public void updatePosition()
+        {
+            try {
+                IssLocation currentLocation = IssLiveData.GetIssLocation();
+                position = new LatLng(
+                        currentLocation.getIssPosition().getLatitude(),
+                        currentLocation.getIssPosition().getLongitude()
+                );
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void addNewMarker()
+        {
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    addMarkerToMap(position);
+
+                    //start - remove afterwards
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+                    //end - remove afterwards
+                    //replace with inside method of animation
+                }
+            });
         }
     }
 
