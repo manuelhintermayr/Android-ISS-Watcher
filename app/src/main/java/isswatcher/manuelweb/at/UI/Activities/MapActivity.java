@@ -28,6 +28,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -72,6 +73,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private final Handler mHandler = new Handler();
     private Marker selectedMarker;
     private Animator animator = new Animator();
+
+
+    private List<LatLng> polylineList;
+    private Marker marker;
+    private float v;
+    private double lat,lng;
+    private Handler handler;
+    private LatLng starPosition;
+
+
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -180,6 +192,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void addObservation(View v) {
+        //get last location and send to addEditObservationActivity
         Intent intent = new Intent(this, AddEditObservationActivity.class);
         startActivity(intent);
     }
@@ -263,7 +276,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }
 
-                mMap.addMarker(new MarkerOptions().position(position).title("Marker in Sydney"));
+                mMap.addMarker(new MarkerOptions().position(position).icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
+                        .title("ISS Position"));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
 
                 return null;
@@ -273,7 +287,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         //asyncTask.execute();
 
 
-        mMap.addMarker(new MarkerOptions().position(position).title("ISS Position"));
+        mMap.addMarker(new MarkerOptions().position(position)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
+                .title("ISS Position"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
 
 
@@ -285,16 +301,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng latLng) {
                 addMarkerToMap(latLng);
-                animator.startAnimation(false);
+                animator.startAnimation(true);
             }
         });
 
     }
 
 
-    protected void addMarkerToMap(LatLng latLng) {
-        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title("title").snippet("snippet"));
+    protected Marker addMarkerToMap(LatLng latLng) {
+        Marker marker = mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title("IS Station")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
+                .snippet("ISS Position"));
         markers.add(marker);
+        return marker;
     }
 
 
@@ -324,7 +345,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         private void resetMarkers() {
             for (Marker marker : markers) {
-                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer));
             }
         }
 
@@ -338,7 +359,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         private void highLightMarker(Marker marker) {
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer_disabled));
             marker.showInfoWindow();
             selectedMarker = marker;
         }
