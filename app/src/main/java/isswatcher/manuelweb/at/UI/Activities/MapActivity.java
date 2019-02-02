@@ -248,8 +248,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     protected Marker addMarkerToMap(LatLng latLng) {
         Marker marker = mMap.addMarker(new MarkerOptions()
-                .position(latLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer)));
+                .position(latLng));
         markers.add(marker);
         return marker;
     }
@@ -268,15 +267,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             updatePosition();
             switchCameraToPosition();
 
-            for(int i=0;i<20;i++)
+            while(true)
             {
                 updatePosition();
                 addNewMarker();
                 animateToNextMarker();
                 sleep();
             }
-
-            //animateToNextMarker();
         }
 
         public void sleep()
@@ -361,7 +358,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         private void editLastTwoEntries() {
-            resetMarkers();
+            highLightMarkersExceptLastOne();
             start = SystemClock.uptimeMillis();
             currentIndex = markers.size()-2;
             endLatLng = getEndLatLng();
@@ -371,7 +368,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         private void resetMarkers() {
             for (Marker marker : markers) {
-                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer));
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
             }
         }
 
@@ -384,8 +381,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             highLightMarker(markers.get(index));
         }
 
+        private void highLightMarkersExceptLastOne() {
+            for (Marker marker : markers) {
+                highLightMarker(marker);
+            }
+            markers.get(markers.size()-1).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        }
+
         private void highLightMarker(Marker marker) {
-            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer_disabled));
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
             marker.showInfoWindow();
             selectedMarker = marker;
         }
@@ -431,7 +435,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     .target(markerPos)
                     .bearing(bearing + BEARING_OFFSET)
                     .tilt(90)
-                    .zoom(mMap.getCameraPosition().zoom >= 8 ? mMap.getCameraPosition().zoom : 8)
+                    .zoom(mMap.getCameraPosition().zoom >= 10 ? mMap.getCameraPosition().zoom : 10)
                     .build();
 
             mMap.animateCamera(
@@ -556,7 +560,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     LatLng begin = getBeginLatLng();
                     LatLng end = getEndLatLng();
                     float bearingL = bearingBetweenLatLngs(begin, end);
-                    highLightMarker(currentIndex);
+
+                    markers.get(currentIndex).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer));
+
                     CameraPosition cameraPosition = new CameraPosition.Builder()
                             .target(end) // changed this...
                             .bearing(bearingL + BEARING_OFFSET)
@@ -572,7 +578,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     mHandler.postDelayed(animator, 16);
                 } else {
                     currentIndex++;
-                    highLightMarker(currentIndex);
+                    markers.get(currentIndex).setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer));
                     stopAnimation();
                 }
             }
