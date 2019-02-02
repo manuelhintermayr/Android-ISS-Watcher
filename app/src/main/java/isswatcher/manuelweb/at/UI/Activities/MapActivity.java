@@ -268,14 +268,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             updatePosition();
             switchCameraToPosition();
 
-            for(int i=0;i<5;i++)
+            for(int i=0;i<20;i++)
             {
                 updatePosition();
                 addNewMarker();
+                animateToNextMarker();
                 sleep();
             }
 
-            animateToNextMarker();
+            //animateToNextMarker();
         }
 
         public void sleep()
@@ -323,11 +324,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         public void animateToNextMarker()
         {
-            if (markers.size() > 2) {
+            //if (markers.size() >= 2) {
+            if (markers.size() == 8) {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        animator.initialize(true);
+                        animator.initialize(true, false);
                     }
                 });
             }
@@ -359,6 +361,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         }
 
+        private void editLastTwoEntries() {
+            resetMarkers();
+            start = SystemClock.uptimeMillis();
+            currentIndex = markers.size()-2;
+            endLatLng = getEndLatLng();
+            beginLatLng = getBeginLatLng();
+
+        }
+
         private void resetMarkers() {
             for (Marker marker : markers) {
                 marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer));
@@ -380,30 +391,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             selectedMarker = marker;
         }
 
-        public void initialize(boolean showPolyLine) {
-            reset();
-            this.showPolyline = showPolyLine;
-            highLightMarker(0);
-            if (showPolyLine) {
-                polyLine = initializePolyLine();
+        public void initialize(boolean showPolyLine, boolean reset) {
+            if(reset)
+            {
+                reset();
+            } else{
+                editLastTwoEntries();
             }
+
+            this.showPolyline = showPolyLine;
+            highLightMarker(currentIndex);
+            if(reset)
+            {
+                if (showPolyLine) {
+                    polyLine = initializePolyLine();
+                }
+            }
+
             // We first need to put the camera in the correct position for the first run (we need 2 markers for this).....
-            LatLng markerPos = markers.get(0).getPosition();
-            LatLng secondPos = markers.get(1).getPosition();
+            LatLng markerPos;
+            LatLng secondPos;
+            if(reset)
+            {
+                markerPos = markers.get(0).getPosition();
+                secondPos = markers.get(1).getPosition();
+            }
+            else{
+                markerPos = markers.get(markers.size()-2).getPosition();
+                secondPos = markers.get(markers.size()-1).getPosition();
+            }
+
             setupCameraPositionForMovement(markerPos, secondPos);
         }
 
         private void setupCameraPositionForMovement(LatLng markerPos, LatLng secondPos) {
             float bearing = bearingBetweenLatLngs(markerPos, secondPos);
             trackingMarker = mMap.addMarker(new MarkerOptions().position(markerPos)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer))
-                    .title("IS Station")
-                    .snippet("ISS Position"));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.iss_pointer)));
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(markerPos)
                     .bearing(bearing + BEARING_OFFSET)
                     .tilt(90)
-                    .zoom(mMap.getCameraPosition().zoom >= 16 ? mMap.getCameraPosition().zoom : 16)
+                    .zoom(mMap.getCameraPosition().zoom >= 8 ? mMap.getCameraPosition().zoom : 8)
                     .build();
 
             mMap.animateCamera(
@@ -474,6 +503,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
          * Add the marker to the polyline.
          */
         private void updatePolyLine(LatLng latLng) {
+            if(polyLine==null)
+            {
+                polyLine = initializePolyLine();
+            }
             List<LatLng> points = polyLine.getPoints();
             points.add(latLng);
             polyLine.setPoints(points);
