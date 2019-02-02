@@ -244,14 +244,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                addMarkerToMap(latLng);
-                animator.startAnimation(true);
-            }
-        });
     }
 
     protected Marker addMarkerToMap(LatLng latLng) {
@@ -273,12 +265,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         public void run()
         {
-            for(int i=0;i<40;i++)
+            updatePosition();
+            switchCameraToPosition();
+
+            for(int i=0;i<5;i++)
             {
-                sleep();
                 updatePosition();
                 addNewMarker();
+                sleep();
             }
+
+            animateToNextMarker();
         }
 
         public void sleep()
@@ -304,19 +301,36 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
+        public void switchCameraToPosition()
+        {
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+                }
+            });
+        }
+
         public void addNewMarker()
         {
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     addMarkerToMap(position);
-
-                    //start - remove afterwards
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-                    //end - remove afterwards
-                    //replace with inside method of animation
                 }
             });
+        }
+
+        public void animateToNextMarker()
+        {
+            if (markers.size() > 2) {
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        animator.initialize(true);
+                    }
+                });
+            }
         }
     }
 
@@ -469,11 +483,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             animator.stop();
         }
 
-        public void startAnimation(boolean showPolyLine) {
-            if (markers.size() > 2) {
-                animator.initialize(showPolyLine);
-            }
-        }
+
 
         @Override
         public void run() {
