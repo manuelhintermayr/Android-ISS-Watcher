@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -27,6 +29,7 @@ import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
 import isswatcher.manuelweb.at.Services.Models.IssPeople;
+import isswatcher.manuelweb.at.Services.Models.Person;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -56,6 +59,7 @@ public class LaunchActivity extends AppCompatActivity {
     private TextView currentPosition;
     private TextView currentPeople;
     private LinearLayout addObservationWrap;
+    private LinearLayout astronautsList;
     ImageView mapsIcon;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -124,24 +128,20 @@ public class LaunchActivity extends AppCompatActivity {
         currentPeople = findViewById(R.id.currentPeople);
         mapsIcon = (ImageView) findViewById(R.id.mapsImage);
         addObservationWrap = findViewById(R.id.add_observation_wrap);
+        astronautsList = findViewById(R.id.listOfAstronauts);
 
+        currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        currentPeople.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
-        // Set up the user interaction to manually show or hide the system UI.
+        // Upon interacting with UI controls, delay any scheduled hide()
+        // operations to prevent the jarring behavior of controls going away
+        // while interacting with the UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
             }
         });
-
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        findViewById(R.id.exit_button).setOnTouchListener(mDelayHideTouchListener);
-
-        currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        currentPeople.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-
         currentPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +160,7 @@ public class LaunchActivity extends AppCompatActivity {
                 openMap(mapsIcon);
             }
         });
+        findViewById(R.id.exit_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
     public void openMap(View v) {
@@ -318,10 +319,44 @@ public class LaunchActivity extends AppCompatActivity {
         public void UpdateAstronauts() throws IOException {
             final IssPeople currentPeopleOnIss = IssLiveData.GetPeopleOnIss();
 
+
+            //LinearLayout lLayout = new LinearLayout(context);
+            //parentWidget.addView(lLayout);
+
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     currentPeople.setText(Integer.toString(currentPeopleOnIss.getPeople().size()));
+                    astronautsList.removeAllViews();
+                    for(Person person : currentPeopleOnIss.getPeople())
+                    {
+                        //Astronaut Name
+                        TextView personName = new TextView(mainActivity);
+                        personName.setTextSize(20);
+                        personName.setText(person.getName());
+
+                        //Astronaut Craft
+                        LinearLayout craftWrap = new LinearLayout(mainActivity);
+                        TextView craftTextPlaceholder = new TextView(mainActivity);
+                        craftTextPlaceholder.setText("Craft: ");
+                        craftWrap.addView(craftTextPlaceholder);
+                        TextView craft = new TextView(mainActivity);
+                        craft.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        craft.setText(person.getCraft());
+                        craftWrap.addView(craft);
+
+                        //Wrap
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        layoutParams.setMargins(0, 8, 0, 0);
+                        LinearLayout personWarp = new LinearLayout(mainActivity);
+                        //personWarp.addView(personName, layoutParams);
+                        //personWarp.addView(craftWrap);
+
+                        //astronautsList.addView(craftWrap);
+                        astronautsList.addView(personName);
+                        astronautsList.addView(craftWrap);
+                    }
                 }
             });
         }

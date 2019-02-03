@@ -13,6 +13,7 @@
     <string name="launch_activity_current_people">Current People</string>
     <string name="launch_activity_view_observation">View Observations</string>
     <string name="launch_activity_current_location">Current Location</string>
+    <string name="launch_activity_astronauts">Astronauts</string>
     <string name="launch_activity_exit_application">Exit</string>
     <!-- end launch activity -->
 
