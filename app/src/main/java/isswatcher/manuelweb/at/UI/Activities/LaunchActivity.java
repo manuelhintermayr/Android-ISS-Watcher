@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import isswatcher.manuelweb.at.R;
@@ -41,6 +42,7 @@ public class LaunchActivity extends AppCompatActivity {
     private View mContentView;
     private TextView currentPosition;
     private TextView currentPeople;
+    private LinearLayout addObservationWrap;
     ImageView mapsIcon;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -109,6 +111,7 @@ public class LaunchActivity extends AppCompatActivity {
         currentPosition = findViewById(R.id.currentPosition);
         currentPeople = findViewById(R.id.currentPeople);
         mapsIcon = (ImageView) findViewById(R.id.mapsImage);
+        addObservationWrap = findViewById(R.id.add_observation_wrap);
 
 
         // Set up the user interaction to manually show or hide the system UI.
@@ -133,7 +136,13 @@ public class LaunchActivity extends AppCompatActivity {
         currentPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMap(currentPosition);
+                openMap(v);
+            }
+        });
+        addObservationWrap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addObservation(v);
             }
         });
         mapsIcon.setOnClickListener(new View.OnClickListener() {
@@ -147,6 +156,12 @@ public class LaunchActivity extends AppCompatActivity {
     public void openMap(View v)
     {
         Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+    }
+
+    public void addObservation(View v)
+    {
+        Intent intent = new Intent(this, AddEditObservationActivity.class);
         startActivity(intent);
     }
 
