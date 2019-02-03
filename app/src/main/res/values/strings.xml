@@ -2,25 +2,26 @@
     <string name="app_name">ISS Watcher</string>
     <string name="back_button_text">Back</string>
     <string name="google_maps_API_key">AIzaSyB1ifwaDk-sgWAWkbVKSiyamy0_9ugViH0</string>
+    <string name="add_observation">Add Observation</string>
 
     <!-- start launch activity -->
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_test">TestActivity</string>
-    <string name="launch_activity_iss_station">ISS Station</string>
+    <string name="launch_activity_is_station">International Space Station</string>
     <string name="launch_activity_current_position">Current Position</string>
+    <string name="launch_activity_current_people">Current People</string>
+    <string name="launch_activity_view_observation">View Observations</string>
     <string name="launch_activity_exit_application">Exit</string>
     <!-- end launch activity -->
 
     <!-- start map activity -->
     <string name="map_activity_title">ISS on the map</string>
     <string name="map_activity_current_location">Current Location</string>
-    <string name="map_activity_add_observation">Add Observation</string>
     <!-- end map activity -->
 
     <!-- start add/edit observation activity -->
     <string name="add_edit_observation_activity_title">Add/Edit Observation</string>
-    <string name="add_edit_observation_activity_add_observation">Add Observation</string>
     <string name="add_edit_observation_activity_edit_observation">Edit Observation</string>
     <!-- end add/edit observation activity -->
 

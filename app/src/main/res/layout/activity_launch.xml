@@ -36,7 +36,7 @@
             android:layout_weight="0"
             android:fontFamily="sans-serif-smallcaps"
             android:gravity="center"
-            android:text="@string/launch_activity_iss_station"
+            android:text="@string/app_name"
             android:textSize="60dp"
             android:textColor="#fff"
             android:textStyle="bold" />
@@ -82,17 +82,73 @@
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/mtrl_card_spacing"
-            android:layout_marginTop="@dimen/mtrl_card_spacing"
-            android:layout_marginRight="@dimen/mtrl_card_spacing"
-            android:minHeight="200dp">
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="18dp">
 
-            <!-- Card contents. -->
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="asdf"/>
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/wrap_for_description_and_current_people"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="2">
+
+                    <TextView
+                        android:id="@+id/message_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/launch_activity_is_station"/>
+                    <LinearLayout
+                        android:id="@+id/wrap_for_current_people"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="24dp"
+                            android:text="@string/launch_activity_current_people"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0"
+                            android:textSize="24dp"
+                            android:text=": "/>
+                        <TextView
+                            android:id="@+id/currentPeople"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0"
+                            android:textSize="24dp"
+                            android:text="-" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_weight="9"
+                    app:srcCompat="@drawable/iss_64" />
+
+
+
+
+            </LinearLayout>
+
         </android.support.v7.widget.CardView>
+
+
 
     </LinearLayout>
 

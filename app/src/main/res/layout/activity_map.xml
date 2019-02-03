@@ -60,7 +60,7 @@
                 android:layout_weight="0"
                 android:gravity="center"
                 android:onClick="addObservation"
-                android:text="@string/map_activity_add_observation"
+                android:text="@string/add_observation"
                 android:textColor="#000" />
         </LinearLayout>
     </LinearLayout>

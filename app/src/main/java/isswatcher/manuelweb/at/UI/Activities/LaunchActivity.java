@@ -40,6 +40,7 @@ public class LaunchActivity extends AppCompatActivity {
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private TextView currentPosition;
+    private TextView currentPeople;
     ImageView mapsIcon;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -106,6 +107,7 @@ public class LaunchActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
         currentPosition = findViewById(R.id.currentPosition);
+        currentPeople = findViewById(R.id.currentPeople);
         mapsIcon = (ImageView) findViewById(R.id.mapsImage);
 
 
@@ -125,13 +127,15 @@ public class LaunchActivity extends AppCompatActivity {
 
         currentPosition.setText("Australia");
         currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        currentPeople.setText("3");
+        currentPeople.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+
         currentPosition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openMap(currentPosition);
             }
         });
-
         mapsIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
