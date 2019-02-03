@@ -256,6 +256,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public class IssAutoUpdate extends Thread {
         MapActivity mainActivity;
         public LatLng position;
+        public boolean errorOccured = false;
 
         public IssAutoUpdate(MapActivity mainActivity)
         {
@@ -270,10 +271,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             while(true)
             {
                 updatePosition();
+                if(errorOccured)
+                {
+                    break;
+                }
                 addNewMarker();
                 animateToNextMarker();
                 sleep();
             }
+
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mainActivity.finish();
+                }
+            });
         }
 
         public void sleep()
@@ -289,6 +301,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         {
             try {
                 IssLocation currentLocation = IssLiveData.GetIssLocation();
+
                 position = new LatLng(
                         currentLocation.getIssPosition().getLatitude(),
                         currentLocation.getIssPosition().getLongitude()
@@ -296,17 +309,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.e(GOOGLE_MAPS_SERVICES_TAG, "The following error occured: "+e.getMessage());
+
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String errorMessage = "Could not get Internet Connection";
+                        Log.e(GOOGLE_MAPS_SERVICES_TAG, errorMessage);
+
+                        Toast.makeText(mainActivity, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                errorOccured = true;
             }
         }
 
         public void switchCameraToPosition()
         {
-            mainActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-                }
-            });
+            if(!errorOccured)
+            {
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
+                    }
+                });
+            }
         }
 
         public void addNewMarker()
