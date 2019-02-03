@@ -3,17 +3,30 @@ package isswatcher.manuelweb.at.UI.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.IssLiveData;
+import isswatcher.manuelweb.at.Services.Models.IssLocation;
+import isswatcher.manuelweb.at.Services.Models.IssPeople;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -98,11 +111,10 @@ public class LaunchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try
-        {
+        try {
             this.getSupportActionBar().hide();
+        } catch (NullPointerException e) {
         }
-        catch (NullPointerException e){}
         setContentView(R.layout.activity_launch);
 
         mVisible = true;
@@ -127,10 +139,7 @@ public class LaunchActivity extends AppCompatActivity {
         // while interacting with the UI.
         findViewById(R.id.exit_button).setOnTouchListener(mDelayHideTouchListener);
 
-
-        currentPosition.setText("Australia");
         currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        currentPeople.setText("3");
         currentPeople.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         currentPosition.setOnClickListener(new View.OnClickListener() {
@@ -153,32 +162,27 @@ public class LaunchActivity extends AppCompatActivity {
         });
     }
 
-    public void openMap(View v)
-    {
+    public void openMap(View v) {
         Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 
-    public void openCurrentLocation(View v)
-    {
+    public void openCurrentLocation(View v) {
         Intent intent = new Intent(this, CurrentLocationActivity.class);
         startActivity(intent);
     }
 
-    public void viewObservations(View v)
-    {
+    public void viewObservations(View v) {
         Intent intent = new Intent(this, ObservationsActivity.class);
         startActivity(intent);
     }
 
-    public void addObservation(View v)
-    {
+    public void addObservation(View v) {
         Intent intent = new Intent(this, AddEditObservationActivity.class);
         startActivity(intent);
     }
 
-    public void closeApp(View v)
-    {
+    public void closeApp(View v) {
         finish();
     }
 
@@ -190,6 +194,9 @@ public class LaunchActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+
+        InfoUpdate infoUpdate = new InfoUpdate(this);
+        infoUpdate.start();
     }
 
     private void toggle() {
@@ -233,5 +240,90 @@ public class LaunchActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+
+    public class InfoUpdate extends Thread {
+        LaunchActivity mainActivity;
+        public LatLng position;
+        public boolean errorOccured = false;
+
+        public InfoUpdate(LaunchActivity mainActivity) {
+            this.mainActivity = mainActivity;
+        }
+
+        public void run() {
+
+            while(true)
+            {
+                try {
+                    UpdateCityName();
+                    UpdateAstronauts();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("iss_internet", "The following error occured: "+e.getMessage());
+
+                    mainActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String errorMessage = "Could not get Internet Connection";
+                            Log.e("iss", errorMessage);
+
+                            AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(mainActivity);
+                            dlgAlert.setMessage(errorMessage);
+                            dlgAlert.setTitle("Error");
+                            dlgAlert.setCancelable(true);
+                            dlgAlert.create().show();
+                        }
+                    });
+
+                    errorOccured = true;
+                }
+                if(errorOccured)
+                {
+                    break;
+                }
+
+                sleep();
+            }
+        }
+
+        public void sleep()
+        {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void UpdateCityName() throws IOException {
+                IssLocation currentLocation = IssLiveData.GetIssLocation();
+                Geocoder gcd = new Geocoder(mainActivity, Locale.getDefault());
+                List<Address> addresses = gcd.getFromLocation(
+                        currentLocation.getIssPosition().getLatitude(),
+                        currentLocation.getIssPosition().getLongitude(),
+                        1);
+
+                final String newCityName = addresses.size() > 0 ? addresses.get(0).getCountryName() : "Unknown";
+
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentPosition.setText(newCityName);
+                    }
+                });
+        }
+
+        public void UpdateAstronauts() throws IOException {
+            final IssPeople currentPeopleOnIss = IssLiveData.GetPeopleOnIss();
+
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    currentPeople.setText(Integer.toString(currentPeopleOnIss.getPeople().size()));
+                }
+            });
+        }
     }
 }
