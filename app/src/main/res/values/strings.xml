@@ -9,9 +9,10 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="launch_activity_is_station">International Space Station</string>
-    <string name="launch_activity_current_position">Current Position</string>
+    <string name="launch_activity_current_position">Current ISS Position</string>
     <string name="launch_activity_current_people">Current People</string>
     <string name="launch_activity_view_observation">View Observations</string>
+    <string name="launch_activity_current_location">Current Location</string>
     <string name="launch_activity_exit_application">Exit</string>
     <!-- end launch activity -->
 

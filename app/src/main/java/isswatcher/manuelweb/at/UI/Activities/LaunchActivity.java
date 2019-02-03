@@ -159,6 +159,18 @@ public class LaunchActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void openCurrentLocation(View v)
+    {
+        Intent intent = new Intent(this, CurrentLocationActivity.class);
+        startActivity(intent);
+    }
+
+    public void viewObservations(View v)
+    {
+        Intent intent = new Intent(this, ObservationsActivity.class);
+        startActivity(intent);
+    }
+
     public void addObservation(View v)
     {
         Intent intent = new Intent(this, AddEditObservationActivity.class);
