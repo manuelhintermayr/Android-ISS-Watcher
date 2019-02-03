@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -319,15 +320,16 @@ public class LaunchActivity extends AppCompatActivity {
         public void UpdateAstronauts() throws IOException {
             final IssPeople currentPeopleOnIss = IssLiveData.GetPeopleOnIss();
 
-
-            //LinearLayout lLayout = new LinearLayout(context);
-            //parentWidget.addView(lLayout);
-
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    //Update astronauts count
                     currentPeople.setText(Integer.toString(currentPeopleOnIss.getPeople().size()));
                     astronautsList.removeAllViews();
+                    LinearLayout placeHolderView = new LinearLayout(mainActivity);
+                    placeHolderView.setOrientation(LinearLayout.VERTICAL);
+
+                    //Update astronauts list
                     for(Person person : currentPeopleOnIss.getPeople())
                     {
                         //Astronaut Name
@@ -348,15 +350,16 @@ public class LaunchActivity extends AppCompatActivity {
                         //Wrap
                         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        layoutParams.setMargins(0, 8, 0, 0);
+                        layoutParams.setMargins(0, 12, 0, 0);
                         LinearLayout personWarp = new LinearLayout(mainActivity);
-                        //personWarp.addView(personName, layoutParams);
-                        //personWarp.addView(craftWrap);
+                        personWarp.setOrientation(LinearLayout.VERTICAL);
+                        personWarp.addView(personName, layoutParams);
+                        personWarp.addView(craftWrap);
 
-                        //astronautsList.addView(craftWrap);
-                        astronautsList.addView(personName);
-                        astronautsList.addView(craftWrap);
+                        placeHolderView.addView(personWarp);
                     }
+
+                    astronautsList.addView(placeHolderView);
                 }
             });
         }
