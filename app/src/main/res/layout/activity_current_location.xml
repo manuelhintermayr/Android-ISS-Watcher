@@ -20,7 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="50dp"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/textView"
@@ -30,8 +31,26 @@
             android:gravity="center"
             android:text="@string/current_location_current_location"
             android:textColor="#fff"
-            android:textSize="50dp"
+            android:textSize="48dp"
             android:fontFamily="sans-serif" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:textSize="20dp"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/current_location_current_position_text" />
+
+        <TextView
+            android:id="@+id/currentPosition"
+            android:textSize="24dp"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- / -" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,7 +78,7 @@
                         android:id="@+id/textView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TextView" />
+                        android:text="Loading..." />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>

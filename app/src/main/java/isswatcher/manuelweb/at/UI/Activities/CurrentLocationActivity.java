@@ -3,12 +3,23 @@ package isswatcher.manuelweb.at.UI.Activities;
 import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
 
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.IssLiveData;
+import isswatcher.manuelweb.at.Services.Models.IssPasses;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -34,6 +45,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private TextView currentPosition;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -94,7 +106,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
+        currentPosition = findViewById(R.id.currentPosition);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +120,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+        currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
     public void goBack(View v)
@@ -123,6 +136,8 @@ public class CurrentLocationActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+        LocationUpdate locationUpdate = new LocationUpdate(this);
+        locationUpdate.start();
     }
 
     private void toggle() {
@@ -167,4 +182,64 @@ public class CurrentLocationActivity extends AppCompatActivity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
+    public class LocationUpdate extends Thread {
+        CurrentLocationActivity mainActivity;
+        public LatLng position;
+        public boolean errorOccured = false;
+        public String errorMessage = "";
+
+        public LocationUpdate(CurrentLocationActivity mainActivity) {
+            this.mainActivity = mainActivity;
+        }
+
+        public void run() {
+            try {
+
+                updateLocation();
+                updateUiInfo();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                errorMessage = "The following error occured: "+e.getMessage();
+                Log.e("internet", errorMessage);
+
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("internet", errorMessage);
+                        Toast.makeText(mainActivity, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                errorOccured = true;
+            }
+            if(errorOccured)
+            {
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainActivity.finish();
+                    }
+                });
+            }
+        }
+
+        public void updateLocation()
+        {
+            position = new LatLng(35.711212, -95.995934);
+
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    currentPosition.setText(position.latitude+" / "+position.longitude);
+                }
+            });
+        }
+
+        public void updateUiInfo() throws IOException {
+            IssPasses issPasses = IssLiveData.GetNextFiveTimeIssPasses(position.latitude, position.longitude);
+        }
+    }
+
 }

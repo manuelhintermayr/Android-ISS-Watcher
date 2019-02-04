@@ -8,6 +8,7 @@ import com.squareup.okhttp.Response;
 import java.io.IOException;
 
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
+import isswatcher.manuelweb.at.Services.Models.IssPasses;
 import isswatcher.manuelweb.at.Services.Models.IssPeople;
 
 public class IssLiveData {
@@ -33,11 +34,8 @@ public class IssLiveData {
         return gson.fromJson(resultJson, IssPeople.class);
     }
 
-    public static IssPeople GetNextFiveTimeIssPasses() throws IOException {
-    //public static IssPeople GetNextFiveTimeIssPasses(double lat, double lon) throws IOException {
-        double lat = 53.766700;
-        double lon = -2.708990;
 
+    public static IssPasses GetNextFiveTimeIssPasses(double lat, double lon) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request requestLocation = new Request.Builder().url("http://api.open-notify.org/iss-pass.json?lat="+lat+"&lon="+lon).build();
         Response response = null;
@@ -45,6 +43,6 @@ public class IssLiveData {
         String resultJson = response.body().string();
 
         Gson gson = new Gson();
-        return gson.fromJson(resultJson, IssPeople.class);
+        return gson.fromJson(resultJson, IssPasses.class);
     }
 }

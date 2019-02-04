@@ -37,5 +37,6 @@
     <!-- start current location activity -->
     <string name="current_location_activity_title">Current ISS Location</string>
     <string name="current_location_current_location">Current Location</string>
+    <string name="current_location_current_position_text">Your current position is:</string>
     <!-- end current location activity -->
 </resources>
