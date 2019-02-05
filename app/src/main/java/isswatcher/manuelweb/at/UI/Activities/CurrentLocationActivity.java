@@ -4,14 +4,20 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +28,7 @@ import java.io.IOException;
 import java.time.LocalTime;
 
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.Exceptions.LocationNotEnabledException;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssPassResponse;
@@ -53,6 +60,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private View mContentView;
     private TextView currentPosition;
     private LinearLayout passesWrap;
+    protected LocationManager locationManager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -139,6 +147,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+        locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
@@ -191,6 +200,11 @@ public class CurrentLocationActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    private boolean isLocationEnabled() {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
     public class LocationUpdate extends Thread {
         CurrentLocationActivity mainActivity;
         public LatLng position;
@@ -221,6 +235,11 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 });
 
                 errorOccured = true;
+            } catch (LocationNotEnabledException e) {
+                e.printStackTrace();
+                showAlertToTurnOnLocation();
+
+                //errorMessage
             }
             if(errorOccured)
             {
@@ -233,8 +252,9 @@ public class CurrentLocationActivity extends AppCompatActivity {
             }
         }
 
-        public void updateLocation()
-        {
+        public void updateLocation() throws LocationNotEnabledException {
+            getLocalNetworkLocation();
+
             position = new LatLng(35.711212, -95.995934);
 
             mainActivity.runOnUiThread(new Runnable() {
@@ -314,6 +334,74 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     }
 
                     passesWrap.addView(placeHolderView);
+                }
+            });
+        }
+
+        public void getLocalNetworkLocation() throws LocationNotEnabledException {
+            if(!isLocationEnabled())
+            {
+                throw new LocationNotEnabledException("Location Service is not enabled/provided for this app.");
+            }
+        }
+
+        private void showAlertToTurnOnLocation() {
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+                    final AlertDialog dialog = builder
+                            .setTitle("Enable Location")
+                            .setMessage("Your Locations Settings are turned off.\nPlease enable your location.")
+                            .setPositiveButton("Location Settings", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+
+                                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivity(myIntent);
+                                    mainActivity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mainActivity.finish();
+                                        }
+                                    });
+
+                                }
+                            })
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    mainActivity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mainActivity.finish();
+                                        }
+                                    });
+
+                                }
+                            }).create();
+
+                    dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(DialogInterface arg0) {
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                            );
+                            params.setMargins(0,0,24,0);
+
+                            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+                            negativeButton.setTextColor(Color.BLACK);
+                            positiveButton.setTextColor(Color.BLACK);
+                            negativeButton.setLayoutParams(params);
+                        }
+                    });
+
+                    dialog.show();
                 }
             });
         }
