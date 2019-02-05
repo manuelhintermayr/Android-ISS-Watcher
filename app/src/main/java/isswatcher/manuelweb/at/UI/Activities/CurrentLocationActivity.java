@@ -4,21 +4,27 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.IssLiveData;
+import isswatcher.manuelweb.at.Services.Models.IssPassResponse;
 import isswatcher.manuelweb.at.Services.Models.IssPasses;
 
 /**
@@ -46,6 +52,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private TextView currentPosition;
+    private LinearLayout passesWrap;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -107,6 +114,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
         currentPosition = findViewById(R.id.currentPosition);
+        passesWrap = findViewById(R.id.passesWrap);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -238,7 +246,76 @@ public class CurrentLocationActivity extends AppCompatActivity {
         }
 
         public void updateUiInfo() throws IOException {
-            IssPasses issPasses = IssLiveData.GetNextFiveTimeIssPasses(position.latitude, position.longitude);
+            final IssPasses issPasses = IssLiveData.GetNextFiveTimeIssPasses(position.latitude, position.longitude);
+            final String timesToPassText = issPasses.getResponse().size()+" next times the ISS will pass:";
+
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    passesWrap.removeAllViews();
+
+                    //main wrap
+                    LinearLayout placeHolderView = new LinearLayout(mainActivity);
+                    placeHolderView.setOrientation(LinearLayout.VERTICAL);
+
+                    //title
+                    TextView issWillPassNextTimeTextPlaceholder = new TextView(mainActivity);
+                    issWillPassNextTimeTextPlaceholder.setTextSize(28);
+                    issWillPassNextTimeTextPlaceholder.setGravity(Gravity.CENTER);
+                    issWillPassNextTimeTextPlaceholder.setText(timesToPassText);
+
+                    //add title to wrap
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    layoutParams.setMargins(0,  0, 0, 24);
+                    LinearLayout titleWarp = new LinearLayout(mainActivity);
+                    titleWarp.setOrientation(LinearLayout.VERTICAL);
+                    titleWarp.addView(issWillPassNextTimeTextPlaceholder, layoutParams);
+                    placeHolderView.addView(titleWarp);
+
+                    for(IssPassResponse pass : issPasses.getResponse())
+                    {
+                        //Pass date
+                        TextView issPassDate = new TextView(mainActivity);
+                        issPassDate.setTextSize(24);
+                        issPassDate.setText(DateManipulation.getDateByUnixTimestamp(pass.getRisetime(), "dd.MM.yyyy - HH:mm:ss"));
+
+                        //Pass time
+                        LinearLayout issPassTimeWrap = new LinearLayout(mainActivity);
+                        TextView issPassTimePlaceholder = new TextView(mainActivity);
+                        issPassTimePlaceholder.setText("Duration: ");
+                        issPassTimePlaceholder.setTextSize(20);
+                        issPassTimeWrap.addView(issPassTimePlaceholder);
+                        TextView issPassTime = new TextView(mainActivity);
+                        issPassTime.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+                        LocalTime timeOfDay = LocalTime.ofSecondOfDay(pass.getDuration());
+                        issPassTime.setText(timeOfDay.toString()+"h");
+                        issPassTime.setTextSize(20);
+                        issPassTimeWrap.addView(issPassTime);
+
+                        //Seperator
+                        LinearLayout.LayoutParams layoutParamsForSeperator = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2);
+                        layoutParamsForSeperator.setMargins(0,24,0,0);
+                        View seperator = new View(mainActivity);
+                        //seperator.setMinimumHeight(0);
+                        seperator.setBackgroundColor(Color.GRAY);
+
+                        //Wrap
+                        LinearLayout.LayoutParams layoutParamsForPass = new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        layoutParamsForPass.setMargins(0, 80, 0, 0);
+                        LinearLayout singlePassWrap = new LinearLayout(mainActivity);
+                        singlePassWrap.setOrientation(LinearLayout.VERTICAL);
+                        singlePassWrap.addView(issPassDate, layoutParamsForPass);
+                        singlePassWrap.addView(issPassTimeWrap);
+                        singlePassWrap.addView(seperator, layoutParamsForSeperator);
+
+                        placeHolderView.addView(singlePassWrap);
+                    }
+
+                    passesWrap.addView(placeHolderView);
+                }
+            });
         }
     }
 
