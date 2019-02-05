@@ -1,14 +1,19 @@
 package isswatcher.manuelweb.at.UI.Activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,17 +27,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.time.LocalTime;
 
+import androidx.core.app.ActivityCompat;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Exceptions.LocationNotEnabledException;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssPassResponse;
 import isswatcher.manuelweb.at.Services.Models.IssPasses;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -61,6 +73,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private TextView currentPosition;
     private LinearLayout passesWrap;
     protected LocationManager locationManager;
+    private FusedLocationProviderClient client;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -118,6 +131,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_current_location);
 
+        requestPermission();
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
@@ -139,8 +153,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
         currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
-    public void goBack(View v)
-    {
+    public void goBack(View v) {
         finish();
     }
 
@@ -148,6 +161,8 @@ public class CurrentLocationActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+
+        client = LocationServices.getFusedLocationProviderClient(CurrentLocationActivity.this);
 
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
@@ -200,6 +215,11 @@ public class CurrentLocationActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    private void requestPermission()
+    {
+        ActivityCompat.requestPermissions(CurrentLocationActivity.this, new String[]{ACCESS_FINE_LOCATION},1);
+    }
+
     private boolean isLocationEnabled() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -223,7 +243,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                errorMessage = "The following error occured: "+e.getMessage();
+                errorMessage = "The following error occured: " + e.getMessage();
 
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
@@ -248,8 +268,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     }
                 });
             }
-            if(errorOccured)
-            {
+            if (errorOccured) {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -262,19 +281,17 @@ public class CurrentLocationActivity extends AppCompatActivity {
         public void updateLocation() throws LocationNotEnabledException {
             getLocalNetworkLocation();
 
-            position = new LatLng(35.711212, -95.995934);
-
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    currentPosition.setText(position.latitude+" / "+position.longitude);
+                    currentPosition.setText(position.latitude + " / " + position.longitude);
                 }
             });
         }
 
         public void updateUiInfo() throws IOException {
             final IssPasses issPasses = IssLiveData.GetNextFiveTimeIssPasses(position.latitude, position.longitude);
-            final String timesToPassText = issPasses.getResponse().size()+" next times the ISS will pass:";
+            final String timesToPassText = issPasses.getResponse().size() + " next times the ISS will pass:";
 
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -294,14 +311,13 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     //add title to wrap
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    layoutParams.setMargins(0,  0, 0, 24);
+                    layoutParams.setMargins(0, 0, 0, 24);
                     LinearLayout titleWarp = new LinearLayout(mainActivity);
                     titleWarp.setOrientation(LinearLayout.VERTICAL);
                     titleWarp.addView(issWillPassNextTimeTextPlaceholder, layoutParams);
                     placeHolderView.addView(titleWarp);
 
-                    for(IssPassResponse pass : issPasses.getResponse())
-                    {
+                    for (IssPassResponse pass : issPasses.getResponse()) {
                         //Pass date
                         TextView issPassDate = new TextView(mainActivity);
                         issPassDate.setTextSize(24);
@@ -316,13 +332,13 @@ public class CurrentLocationActivity extends AppCompatActivity {
                         TextView issPassTime = new TextView(mainActivity);
                         issPassTime.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
                         LocalTime timeOfDay = LocalTime.ofSecondOfDay(pass.getDuration());
-                        issPassTime.setText(timeOfDay.toString()+"h");
+                        issPassTime.setText(timeOfDay.toString() + "h");
                         issPassTime.setTextSize(20);
                         issPassTimeWrap.addView(issPassTime);
 
                         //Seperator
                         LinearLayout.LayoutParams layoutParamsForSeperator = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2);
-                        layoutParamsForSeperator.setMargins(0,24,0,0);
+                        layoutParamsForSeperator.setMargins(0, 24, 0, 0);
                         View seperator = new View(mainActivity);
                         //seperator.setMinimumHeight(0);
                         seperator.setBackgroundColor(Color.GRAY);
@@ -346,11 +362,24 @@ public class CurrentLocationActivity extends AppCompatActivity {
         }
 
         public void getLocalNetworkLocation() throws LocationNotEnabledException {
-            if(!isLocationEnabled())
-            {
+            if (!isLocationEnabled()) {
                 throw new LocationNotEnabledException("Location Service is not enabled/provided for this app.");
             }
-            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2 * 60 * 1000, 10, locationListenerGPS);
+
+            if (ActivityCompat.checkSelfPermission(CurrentLocationActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+
+            client.getLastLocation().addOnSuccessListener(CurrentLocationActivity.this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if(location!=null)
+                    {
+                        position = new LatLng(location.getLatitude(), location.getLatitude());
+                    }
+                }
+            });
+            
         }
 
         private void showAlertToTurnOnLocation() {
