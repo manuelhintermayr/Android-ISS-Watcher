@@ -224,7 +224,6 @@ public class CurrentLocationActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 errorMessage = "The following error occured: "+e.getMessage();
-                Log.e("internet", errorMessage);
 
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
@@ -238,8 +237,16 @@ public class CurrentLocationActivity extends AppCompatActivity {
             } catch (LocationNotEnabledException e) {
                 e.printStackTrace();
                 showAlertToTurnOnLocation();
+                //no errorOccured=true; because else the activity would be closed before the dialog was shown
+                errorMessage = "Location service is not enabled";
 
-                //errorMessage
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("locationService", errorMessage);
+                        Toast.makeText(mainActivity, errorMessage, Toast.LENGTH_LONG).show();
+                    }
+                });
             }
             if(errorOccured)
             {
@@ -343,6 +350,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
             {
                 throw new LocationNotEnabledException("Location Service is not enabled/provided for this app.");
             }
+            //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2 * 60 * 1000, 10, locationListenerGPS);
         }
 
         private void showAlertToTurnOnLocation() {
@@ -369,7 +377,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
                                 }
                             })
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
 
