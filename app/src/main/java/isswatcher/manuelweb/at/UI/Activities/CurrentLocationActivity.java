@@ -74,6 +74,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     private LinearLayout passesWrap;
     protected LocationManager locationManager;
     private FusedLocationProviderClient client;
+    public boolean allPermissionsGranted = false;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -131,7 +132,6 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_current_location);
 
-        requestPermission();
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
@@ -225,6 +225,24 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    allPermissionsGranted = true;
+                } else {
+                    String errorMessage = "Permissions denied by the user.";
+                    Log.e("permissions", errorMessage);
+                    Toast.makeText(CurrentLocationActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    CurrentLocationActivity.this.finish();
+                }
+                return;
+            }
+        }
+    }
+
     public class LocationUpdate extends Thread {
         CurrentLocationActivity mainActivity;
         public LatLng position;
@@ -237,7 +255,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         public void run() {
             try {
-
+                requestLocationPermission();
                 updateLocation();
                 updateUiInfo();
 
@@ -278,8 +296,15 @@ public class CurrentLocationActivity extends AppCompatActivity {
             }
         }
 
+        public void requestLocationPermission()
+        {
+            requestPermission();
+        }
+
         public void updateLocation() throws LocationNotEnabledException {
-            getLocalNetworkLocation();
+            //getLocalNetworkLocation();
+
+            position = new LatLng(35.711212, -95.995934);
 
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -379,7 +404,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     }
                 }
             });
-            
+
         }
 
         private void showAlertToTurnOnLocation() {
