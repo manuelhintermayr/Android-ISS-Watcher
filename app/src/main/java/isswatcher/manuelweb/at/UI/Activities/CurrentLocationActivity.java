@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -462,6 +463,15 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
             if(!positionWasSuccessfullyLoaded)
             {
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                                Uri.parse("https://www.google.com/maps?saddr=My+Location"));
+                        startActivity(intent);
+                    }
+                });
+
                 throw new LocationNotFoundException("Could not load location from the location service. Try opening google maps and find there your location.");
             }
         }
