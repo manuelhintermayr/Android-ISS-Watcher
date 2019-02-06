@@ -255,6 +255,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         public void run() {
             try {
+                checkInternetConnection();
                 requestLocationPermission();
                 updateLocation();
                 updateUiInfo();
@@ -294,6 +295,10 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     }
                 });
             }
+        }
+
+        public void checkInternetConnection() throws IOException {
+            IssLiveData.GetIssLocation();
         }
 
         public void requestLocationPermission()
