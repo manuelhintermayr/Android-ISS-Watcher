@@ -48,6 +48,7 @@ import java.util.Locale;
 import androidx.core.app.ActivityCompat;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Exceptions.LocationNotEnabledException;
+import isswatcher.manuelweb.at.Services.Exceptions.LocationNotFoundException;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssPassResponse;
@@ -267,7 +268,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 updateLocation();
                 updateUiInfo();
 
-            } catch (IOException e) {
+            } catch (IOException | LocationNotFoundException e) {
                 e.printStackTrace();
                 errorMessage = "The following error occured: " + e.getMessage();
 
@@ -320,13 +321,8 @@ public class CurrentLocationActivity extends AppCompatActivity {
             }
         }
 
-        public void updateLocation() throws LocationNotEnabledException {
+        public void updateLocation() throws LocationNotEnabledException, LocationNotFoundException {
             getLocalNetworkLocation();
-
-            if (position == null) {
-                //position = new LatLng(0, 0);
-                position = new LatLng(35.711212, -95.995934);
-            }
 
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -411,7 +407,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
             });
         }
 
-        public void getLocalNetworkLocation() throws LocationNotEnabledException {
+        public void getLocalNetworkLocation() throws LocationNotEnabledException, LocationNotFoundException {
             if (!isLocationEnabled()) {
                 throw new LocationNotEnabledException("Location Service is not enabled/provided for this app.");
             }
@@ -421,24 +417,24 @@ public class CurrentLocationActivity extends AppCompatActivity {
             final LocationRequest request = new LocationRequest().create();
             request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
+            //action what to do when accessing the location
             final LocationCallback locationCallback = new LocationCallback() {
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
                     if (locationResult == null) {
                         return;
                     }
+
                     for (Location location : locationResult.getLocations()) {
                         if (location != null) {
                             position = new LatLng(location.getLatitude(), location.getLongitude());
                             positionWasSuccessfullyLoaded = true;
-
-                            TextView asd = findViewById(R.id.textView);
-                            asd.setText(position.latitude+" / "+position.longitude);
-
                         }
                     }
                 }
             };
+
+            //activating the location call
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -449,8 +445,8 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 }
             });
 
-            //Wait max 15 seconds to get the location
-            for(int i=0;i<15;i++)
+            //Wait max 10 seconds to get the location
+            for(int i=0;i<10;i++)
             {
                 if(positionWasSuccessfullyLoaded)
                 {
@@ -464,6 +460,10 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 }
             }
 
+            if(!positionWasSuccessfullyLoaded)
+            {
+                throw new LocationNotFoundException("Could not load location from the location service. Try opening google maps and find there your location.");
+            }
         }
 
         private void showAlertToTurnOnLocation() {
