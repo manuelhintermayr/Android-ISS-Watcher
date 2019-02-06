@@ -39,6 +39,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.Locale;
@@ -82,6 +84,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
     protected LocationManager locationManager;
     private FusedLocationProviderClient client;
     public boolean allPermissionsGranted = false;
+    public boolean positionWasSuccessfullyLoaded = false;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -413,41 +416,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 throw new LocationNotEnabledException("Location Service is not enabled/provided for this app.");
             }
 
-            //final LocationRequest mLocationRequest;
-
-            long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
-            long FASTEST_INTERVAL = 2000; /* 2 sec */
-
-            //mLocationRequest = new LocationRequest();
-            //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-            //LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-            //builder.addLocationRequest(mLocationRequest);
-            //LocationSettingsRequest locationSettingsRequest = builder.build();
-
-            //SettingsClient settingsClient = LocationServices.getSettingsClient(CurrentLocationActivity.this);
-            //settingsClient.checkLocationSettings(locationSettingsRequest);
-
-
             client = LocationServices.getFusedLocationProviderClient(CurrentLocationActivity.this);
-
-
-            if (ActivityCompat.checkSelfPermission(CurrentLocationActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-
-
-            client.getLastLocation().addOnSuccessListener(CurrentLocationActivity.this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    if(location!=null)
-                    {
-
-                        TextView asd = findViewById(R.id.textView);
-                        asd.setText(location.toString());
-                    }
-                }
-            });
 
             final LocationRequest request = new LocationRequest().create();
             request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -460,12 +429,12 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     }
                     for (Location location : locationResult.getLocations()) {
                         if (location != null) {
-                            double wayLatitude = location.getLatitude();
-                            double wayLongitude = location.getLongitude();
-                            TextView asd = findViewById(R.id.textView);
+                            position = new LatLng(location.getLatitude(), location.getLongitude());
+                            positionWasSuccessfullyLoaded = true;
 
-                            asd.setText(location.toString());
-                            asd.setText(String.format(Locale.US, "%s -- %s", wayLatitude, wayLongitude));
+                            TextView asd = findViewById(R.id.textView);
+                            asd.setText(position.latitude+" / "+position.longitude);
+
                         }
                     }
                 }
@@ -473,40 +442,27 @@ public class CurrentLocationActivity extends AppCompatActivity {
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    if (ActivityCompat.checkSelfPermission(CurrentLocationActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
                     client.requestLocationUpdates(request, locationCallback, Looper.myLooper());
                 }
             });
 
+            //Wait max 15 seconds to get the location
+            for(int i=0;i<15;i++)
+            {
+                if(positionWasSuccessfullyLoaded)
+                {
+                    break;
+                }
 
-
-            //mainActivity.runOnUiThread(new Runnable() {
-            //    @Override
-            //    public void run() {
-            //        if (ActivityCompat.checkSelfPermission(CurrentLocationActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            //            return;
-            //        }
-            //        client.requestLocationUpdates(mLocationRequest, new LocationCallback() {
-            //                    @Override
-            //                    public void onLocationResult(LocationResult locationResult) {
-            //                        // do work here
-            //                        position = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLatitude());
-            //                        Toast.makeText(CurrentLocationActivity.this, "ok", Toast.LENGTH_LONG);
-            //                    }
-            //                },
-            //                Looper.myLooper());
-            //    }
-            //});
-
-
-            //client.getLastLocation().addOnSuccessListener(CurrentLocationActivity.this, new OnSuccessListener<Location>() {
-            //    @Override
-            //    public void onSuccess(Location location) {
-            //        if(location!=null)
-            //        {
-            //            position = new LatLng(location.getLatitude(), location.getLatitude());
-            //        }
-            //    }
-            //});
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
         }
 
