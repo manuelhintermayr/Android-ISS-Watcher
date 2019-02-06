@@ -17,6 +17,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,7 +29,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -162,8 +168,6 @@ public class CurrentLocationActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-        client = LocationServices.getFusedLocationProviderClient(CurrentLocationActivity.this);
-
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
@@ -215,9 +219,8 @@ public class CurrentLocationActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private void requestPermission()
-    {
-        ActivityCompat.requestPermissions(CurrentLocationActivity.this, new String[]{ACCESS_FINE_LOCATION},1);
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(CurrentLocationActivity.this, new String[]{ACCESS_FINE_LOCATION}, 1);
     }
 
     private boolean isLocationEnabled() {
@@ -301,11 +304,9 @@ public class CurrentLocationActivity extends AppCompatActivity {
             IssLiveData.GetIssLocation();
         }
 
-        public void requestLocationPermission()
-        {
+        public void requestLocationPermission() {
             requestPermission();
-            while (!allPermissionsGranted)
-            {
+            while (!allPermissionsGranted) {
                 //wait for permission request to finish
                 try {
                     Thread.sleep(1000);
@@ -316,9 +317,12 @@ public class CurrentLocationActivity extends AppCompatActivity {
         }
 
         public void updateLocation() throws LocationNotEnabledException {
-            //getLocalNetworkLocation();
+            getLocalNetworkLocation();
 
-            position = new LatLng(35.711212, -95.995934);
+            if (position == null) {
+                //position = new LatLng(0, 0);
+                position = new LatLng(35.711212, -95.995934);
+            }
 
             mainActivity.runOnUiThread(new Runnable() {
                 @Override
@@ -330,6 +334,9 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
         public void updateUiInfo() throws IOException {
             final IssPasses issPasses = IssLiveData.GetNextFiveTimeIssPasses(position.latitude, position.longitude);
+            if (issPasses.getResponse() == null) {
+                throw new IOException("Could not get data with given location from service.");
+            }
             final String timesToPassText = issPasses.getResponse().size() + " next times the ISS will pass:";
 
             mainActivity.runOnUiThread(new Runnable() {
@@ -405,9 +412,46 @@ public class CurrentLocationActivity extends AppCompatActivity {
                 throw new LocationNotEnabledException("Location Service is not enabled/provided for this app.");
             }
 
-            if (ActivityCompat.checkSelfPermission(CurrentLocationActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
+            final LocationRequest mLocationRequest;
+
+            long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
+            long FASTEST_INTERVAL = 2000; /* 2 sec */
+
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+            builder.addLocationRequest(mLocationRequest);
+            LocationSettingsRequest locationSettingsRequest = builder.build();
+
+            SettingsClient settingsClient = LocationServices.getSettingsClient(CurrentLocationActivity.this);
+            settingsClient.checkLocationSettings(locationSettingsRequest);
+
+
+            client = LocationServices.getFusedLocationProviderClient(CurrentLocationActivity.this);
+
+
+
+
+
+            mainActivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (ActivityCompat.checkSelfPermission(CurrentLocationActivity.this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    client.requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                                @Override
+                                public void onLocationResult(LocationResult locationResult) {
+                                    // do work here
+                                    position = new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLatitude());
+                                    Toast.makeText(CurrentLocationActivity.this, "ok", Toast.LENGTH_LONG);
+                                }
+                            },
+                            Looper.myLooper());
+                }
+            });
+
 
             client.getLastLocation().addOnSuccessListener(CurrentLocationActivity.this, new OnSuccessListener<Location>() {
                 @Override
