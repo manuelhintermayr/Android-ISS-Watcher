@@ -299,6 +299,15 @@ public class CurrentLocationActivity extends AppCompatActivity {
         public void requestLocationPermission()
         {
             requestPermission();
+            while (!allPermissionsGranted)
+            {
+                //wait for permission request to finish
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         public void updateLocation() throws LocationNotEnabledException {
