@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -56,6 +58,7 @@ public class LaunchActivity extends AppCompatActivity {
     private View mContentView;
     private TextView currentPosition;
     private TextView currentPeople;
+    private TextView addObservationsLink;
     private LinearLayout addObservationWrap;
     private LinearLayout astronautsList;
     ImageView mapsIcon;
@@ -127,9 +130,11 @@ public class LaunchActivity extends AppCompatActivity {
         mapsIcon = (ImageView) findViewById(R.id.mapsImage);
         addObservationWrap = findViewById(R.id.add_observation_wrap);
         astronautsList = findViewById(R.id.listOfAstronauts);
+        addObservationsLink = findViewById(R.id.addObservationLink);
 
         currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         currentPeople.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        addObservationsLink.setPaintFlags(addObservationsLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away

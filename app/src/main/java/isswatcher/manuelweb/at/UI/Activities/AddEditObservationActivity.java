@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.google.android.material.textfield.TextInputEditText;
+
 import isswatcher.manuelweb.at.R;
 
 /**
@@ -34,6 +36,10 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private TextInputEditText timestampTextField;
+    private TextInputEditText latitudeTextField;
+    private TextInputEditText longtitudeTextField;
+    private TextInputEditText notesTextField;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -94,7 +100,10 @@ public class AddEditObservationActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
+        timestampTextField = findViewById(R.id.timestampTextfield);
+        latitudeTextField = findViewById(R.id.latitudeTextfield);
+        longtitudeTextField = findViewById(R.id.longitudeTextfield);
+        notesTextField = findViewById(R.id.notesTextfield);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +117,12 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+    }
+
+    public void addUpdateEntry(View v)
+    {
+        final String timestamp = timestampTextField.getText().toString();
+        final String notes = notesTextField.getText().toString();
     }
 
     public void goBack(View v)

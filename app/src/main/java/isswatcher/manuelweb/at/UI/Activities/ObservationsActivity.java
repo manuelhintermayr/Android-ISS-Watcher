@@ -3,10 +3,13 @@ package isswatcher.manuelweb.at.UI.Activities;
 import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ListView;
 
 import isswatcher.manuelweb.at.R;
 
@@ -108,7 +111,17 @@ public class ObservationsActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+
+
+
+        ListView listView = (ListView) findViewById(R.id.list_view);
+
     }
+
+    public void addEntry(View view) {
+        startActivity(new Intent(this, AddEditObservationActivity.class));
+    }
+
 
     public void goBack(View v)
     {

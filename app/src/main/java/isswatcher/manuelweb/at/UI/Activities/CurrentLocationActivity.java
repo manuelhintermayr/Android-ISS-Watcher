@@ -358,7 +358,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
                     //add title to wrap
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    layoutParams.setMargins(0, 0, 0, 24);
+                    layoutParams.setMargins(0, 0, 0, 0);
                     LinearLayout titleWarp = new LinearLayout(mainActivity);
                     titleWarp.setOrientation(LinearLayout.VERTICAL);
                     titleWarp.addView(issWillPassNextTimeTextPlaceholder, layoutParams);
@@ -385,7 +385,7 @@ public class CurrentLocationActivity extends AppCompatActivity {
 
                         //Seperator
                         LinearLayout.LayoutParams layoutParamsForSeperator = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 2);
-                        layoutParamsForSeperator.setMargins(0, 24, 0, 0);
+                        layoutParamsForSeperator.setMargins(0, 16, 0, 0);
                         View seperator = new View(mainActivity);
                         //seperator.setMinimumHeight(0);
                         seperator.setBackgroundColor(Color.GRAY);
