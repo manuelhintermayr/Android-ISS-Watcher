@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "observations")
-public class Observations {
+public class Observation {
     @PrimaryKey(autoGenerate = true)
     public int id;
     public long timestamp;
@@ -12,7 +12,7 @@ public class Observations {
     public float lng;
     public String notes;
 
-    public Observations(long timestamp, float lat, float lng, String notes) {
+    public Observation(long timestamp, float lat, float lng, String notes) {
         this.timestamp = timestamp;
         this.lat = lat;
         this.lng = lng;

@@ -8,13 +8,13 @@ import static androidx.room.ForeignKey.CASCADE;
 @Entity(
         tableName = "pictures",
         foreignKeys = @ForeignKey(
-                entity = Observations.class,
+                entity = Observation.class,
                 parentColumns = "id",
                 childColumns = "observation_id",
                 onDelete = CASCADE
         )
 )
-public class Pictures {
+public class Picture {
     public int observation_id;
     public String picture_id;
 }
