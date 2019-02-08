@@ -1,7 +1,9 @@
 package isswatcher.manuelweb.at.Services.Models.Entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -16,5 +18,9 @@ import static androidx.room.ForeignKey.CASCADE;
 )
 public class Picture {
     public int observation_id;
+    @PrimaryKey(autoGenerate = false)
+    @NonNull
     public String picture_id;
 }
+
+

@@ -9,9 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.List;
+
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
+import isswatcher.manuelweb.at.Services.ObservationsDatabase;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -37,6 +42,7 @@ public class ObservationsActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private ListView listView;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -97,7 +103,7 @@ public class ObservationsActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
+        listView = (ListView) findViewById(R.id.list_view);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -111,12 +117,21 @@ public class ObservationsActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
-
-
-
-        ListView listView = (ListView) findViewById(R.id.list_view);
-
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<Observation> allEntries = ObservationsDatabase
+                .getDatabase(this)
+                .observationsDao()
+                .getAllEntries();
+        final ArrayAdapter entriesAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, allEntries);
+        listView.setAdapter(entriesAdapter);
+    }
+
 
     public void addEntry(View view) {
         startActivity(new Intent(this, AddEditObservationActivity.class));

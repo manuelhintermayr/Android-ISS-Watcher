@@ -14,7 +14,8 @@ public interface PictureDao {
     @Insert
     void insert(Picture entry);
 
-    List<Observation> getAllEntries();
+    @Query("SELECT * FROM pictures")
+    List<Picture> getAllEntries();
 
     @Delete
     void delete(Picture entry);

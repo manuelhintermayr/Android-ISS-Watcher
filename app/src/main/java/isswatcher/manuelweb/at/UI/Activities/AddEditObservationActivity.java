@@ -3,6 +3,8 @@ package isswatcher.manuelweb.at.UI.Activities;
 import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -10,7 +12,12 @@ import android.view.View;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
+
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.Models.DAO.ObservationsDao;
+import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
+import isswatcher.manuelweb.at.Services.ObservationsDatabase;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -121,8 +128,21 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     public void addUpdateEntry(View v)
     {
-        final String timestamp = timestampTextField.getText().toString();
+        final long timestamp = Long.valueOf(timestampTextField.getText().toString());
+        final float lat = Float.valueOf(latitudeTextField.getText().toString());
+        final float lng = Float.valueOf(longtitudeTextField.getText().toString());
         final String notes = notesTextField.getText().toString();
+
+        //ObservationsDao obsDao = ObservationsDatabase
+         //       .getInstance(context)
+           //d     .getRepoDao();
+
+        ObservationsDatabase
+                .getDatabase(this)
+                .observationsDao()
+                .insert(new Observation(timestamp, lat, lng, notes));
+
+        startActivity(new Intent(this, ObservationsActivity.class));
     }
 
     public void goBack(View v)
