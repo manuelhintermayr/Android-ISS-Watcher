@@ -132,11 +132,7 @@ public class ObservationsActivity extends AppCompatActivity {
                 .getDatabase(this)
                 .observationsDao()
                 .getAllEntries();
-        final ArrayAdapter entriesAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, allEntries);
 
-
-        recyclerView.setHasFixedSize(true);
         recyclerViewAdapter = new ObservationsViewAdapter(allEntries);
 
         recyclerView.setLayoutManager(recyclerViewLayoutManager);

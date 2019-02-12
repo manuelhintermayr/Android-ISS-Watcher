@@ -3,6 +3,8 @@ package isswatcher.manuelweb.at.UI;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -33,8 +35,34 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     public void onBindViewHolder(@NonNull ObservationsViewHolder holder, int position) {
         Observation item = observationList.get(position);
 
-        holder.headline.setText(DateManipulation.getDateByUnixTimestamp(item.timestamp, "DD.MM.YYYY - hh:mm:ss"));
-        holder.description.setText(item.notes);
+        //image manipulation
+        holder.image.setMaxHeight(64);
+        holder.image.setMaxWidth(64);
+            //todo: call to check if images are aviable for this entry
+
+        //location manipulation
+        holder.location.setText(item.lat + " / " + item.lng);
+
+        //time manipulation
+        holder.headline.setText(DateManipulation.getDateByUnixTimestamp(item.timestamp, "dd.MM.yyyy - HH:mm:ss"));
+
+        //notes manipulation
+        if(item.notes.equals(""))
+        {
+            holder.description.setVisibility(View.GONE);
+        }
+        else{
+            String notesContent = item.notes;
+            //todo: remove line breaks
+            //todo: reduce text
+            holder.description.setText(notesContent);
+        }
+
+        //edit button manipulation
+            //todo
+
+        //remove button manipulation
+            //todo
     }
 
     @Override
@@ -43,12 +71,20 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     }
 
     public static class ObservationsViewHolder extends RecyclerView.ViewHolder{
+        public ImageView image;
+
+        public TextView location;
         public TextView headline;
         public TextView description;
+
+        public Button editButton;
+        public Button deleteButton;
 
         public ObservationsViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            image = itemView.findViewById(R.id.issImageView);
+            location = itemView.findViewById(R.id.observationLocation);
             headline = itemView.findViewById(R.id.observationTime);
             description = itemView.findViewById(R.id.observationNotes);
         }
