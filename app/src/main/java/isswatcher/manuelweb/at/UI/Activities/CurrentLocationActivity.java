@@ -165,6 +165,11 @@ public class CurrentLocationActivity extends AppCompatActivity {
         currentPosition.setPaintFlags(currentPosition.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
+    public void addObservation(View v) {
+        Intent intent = new Intent(this, AddEditObservationActivity.class);
+        startActivity(intent);
+    }
+
     public void goBack(View v) {
         finish();
     }
