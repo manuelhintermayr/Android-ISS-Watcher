@@ -53,8 +53,8 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         }
         else{
             String notesContent = item.notes;
-            //todo: remove line breaks
-            //todo: reduce text
+            notesContent = notesContent.replace('\n',' ');
+            notesContent = notesContent.length()>30 ? notesContent.substring(0,30)+"..." : notesContent;
             holder.description.setText(notesContent);
         }
 
