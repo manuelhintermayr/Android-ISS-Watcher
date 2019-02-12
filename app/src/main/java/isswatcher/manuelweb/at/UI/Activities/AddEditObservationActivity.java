@@ -7,14 +7,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 import isswatcher.manuelweb.at.R;
@@ -164,8 +167,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // are available.
         delayedHide(100);
 
-        Intent myIntent = getIntent();
-        if(!(myIntent.getStringExtra("updateEntryId")!=null))
+        if((getIntent().getStringExtra("updateEntryId")!=null))
         {
             isUpdateScreen = true;
         }
@@ -177,12 +179,37 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
             Button updateButton = findViewById(R.id.actionButton);
             updateButton.setText("Update Entry");
+
+            try{
+                currentObservation = loadObservationToUpdate();
+                timestampTextField.setText(Long.toString(currentObservation.timestamp));
+                latitudeTextField.setText(Float.toString(currentObservation.lat));
+                longtitudeTextField.setText(Float.toString(currentObservation.lng));
+                notesTextField.setText(currentObservation.notes);
+            }
+            catch (Exception e)
+            {
+                String errorMessage = "The following error occured while trying to open entry to update: "+e.getMessage();
+                Log.e("updateEntry", errorMessage);
+
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+
         }
         else
         {
             InfoUpdate infoUpdate = new InfoUpdate(this);
             infoUpdate.start();
         }
+    }
+
+    private Observation loadObservationToUpdate() {
+        return ObservationsDatabase
+                .getDatabase(this)
+                .observationsDao()
+                .getElementById(Integer.valueOf(
+                        getIntent().getStringExtra("updateEntryId")
+                ));
     }
 
     private void toggle() {

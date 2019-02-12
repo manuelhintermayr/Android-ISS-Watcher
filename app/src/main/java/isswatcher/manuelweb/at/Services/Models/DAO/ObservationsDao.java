@@ -17,6 +17,9 @@ public interface ObservationsDao {
     @Query("SELECT * FROM observations ORDER BY timestamp")
     List<Observation> getAllEntries();
 
+    @Query("SELECT * FROM observations WHERE id = :id")
+    Observation getElementById(int id);
+
     @Delete
     void delete(Observation entry);
 

@@ -1,7 +1,6 @@
 package isswatcher.manuelweb.at.UI;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,7 +106,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         public TextView description;
 
         public Button editButton;
-        public Button deleteButton;
+        public Button removeButton;
 
         public ObservationsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -117,6 +116,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
             headline = itemView.findViewById(R.id.observationTime);
             description = itemView.findViewById(R.id.observationNotes);
             editButton = itemView.findViewById(R.id.editButton);
+            removeButton = itemView.findViewById(R.id.removeButton);
         }
     }
 
