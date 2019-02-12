@@ -53,6 +53,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private TextInputEditText longtitudeTextField;
     private TextInputEditText notesTextField;
     private boolean isUpdateScreen = false;
+    private Observation currentObservation;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -130,15 +131,6 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
-
-        if(isUpdateScreen)
-        {
-            TextView title = findViewById(R.id.screenTitle);
-            title.setText("Update Entry");
-
-            Button updateButton = findViewById(R.id.actionButton);
-            updateButton.setText("Update Entry");
-        }
     }
 
     public void addUpdateEntry(View v)
@@ -147,11 +139,12 @@ public class AddEditObservationActivity extends AppCompatActivity {
         final float lat = Float.valueOf(latitudeTextField.getText().toString());
         final float lng = Float.valueOf(longtitudeTextField.getText().toString());
         final String notes = notesTextField.getText().toString();
+        currentObservation = new Observation(timestamp, lat, lng, notes);
 
         ObservationsDatabase
                 .getDatabase(this)
                 .observationsDao()
-                .insert(new Observation(timestamp, lat, lng, notes));
+                .insert(currentObservation);
 
         startActivity(new Intent(this, ObservationsActivity.class));
         finish();
@@ -171,8 +164,25 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // are available.
         delayedHide(100);
 
-        InfoUpdate infoUpdate = new InfoUpdate(this);
-        infoUpdate.start();
+        Intent myIntent = getIntent();
+        if(!(myIntent.getStringExtra("updateEntryId")!=null))
+        {
+            isUpdateScreen = true;
+        }
+
+        if(isUpdateScreen)
+        {
+            TextView title = findViewById(R.id.screenTitle);
+            title.setText("Update Entry");
+
+            Button updateButton = findViewById(R.id.actionButton);
+            updateButton.setText("Update Entry");
+        }
+        else
+        {
+            InfoUpdate infoUpdate = new InfoUpdate(this);
+            infoUpdate.start();
+        }
     }
 
     private void toggle() {

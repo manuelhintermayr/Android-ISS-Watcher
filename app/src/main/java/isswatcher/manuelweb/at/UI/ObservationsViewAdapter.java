@@ -49,7 +49,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     @Override
     public void onBindViewHolder(@NonNull ObservationsViewHolder holder, int position) {
         updateList();
-        Observation item = observationList.get(position);
+        final Observation item = observationList.get(position);
 
         //image manipulation
         holder.image.setMaxHeight(64);
@@ -82,13 +82,13 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                     @Override
                     public void run() {
                         Intent intent = new Intent(observationsActivity, AddEditObservationActivity.class);
+                        intent.putExtra("updateEntryId",Integer.toString(item.id));
                         observationsActivity.startActivity(intent);
                         observationsActivity.finish();
                     }
                 });
             }
         });
-            //todo
 
         //remove button manipulation
             //todo
