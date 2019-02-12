@@ -1,5 +1,7 @@
 package isswatcher.manuelweb.at.UI;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
 import isswatcher.manuelweb.at.Services.ObservationsDatabase;
+import isswatcher.manuelweb.at.UI.Activities.AddEditObservationActivity;
 import isswatcher.manuelweb.at.UI.Activities.ObservationsActivity;
 
 public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsViewAdapter.ObservationsViewHolder> {
@@ -72,6 +75,19 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         }
 
         //edit button manipulation
+        holder.editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                observationsActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent(observationsActivity, AddEditObservationActivity.class);
+                        observationsActivity.startActivity(intent);
+                        observationsActivity.finish();
+                    }
+                });
+            }
+        });
             //todo
 
         //remove button manipulation
@@ -100,6 +116,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
             location = itemView.findViewById(R.id.observationLocation);
             headline = itemView.findViewById(R.id.observationTime);
             description = itemView.findViewById(R.id.observationNotes);
+            editButton = itemView.findViewById(R.id.editButton);
         }
     }
 
