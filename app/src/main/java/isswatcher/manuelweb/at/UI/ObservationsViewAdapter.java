@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -24,6 +26,8 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     public ObservationsActivity observationsActivity;
     private List<Observation> observationList;
     private OnItemClickListener clickListener;
+    Observation recentlyDeletedItem;
+    int recentlyDeletedItemPosition;
 
     public ObservationsViewAdapter(ObservationsActivity observationsActivity) {
         this.observationsActivity = observationsActivity;
@@ -105,6 +109,9 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
 
     public void removeItem(final int position) {
         final Observation item = observationList.get(position);
+        recentlyDeletedItem = item;
+        recentlyDeletedItemPosition = position;
+
         ObservationsDatabase.getDatabase(observationsActivity)
                 .observationsDao()
                 .delete(item);
@@ -117,6 +124,31 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                 observationsActivity.recyclerViewAdapter.notifyDataSetChanged();
             }
         });
+
+        showUndoSnackbar();
+    }
+
+    private void showUndoSnackbar() {
+        observationsActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View view = observationsActivity.findViewById(R.id.totalWrap);
+                Snackbar snackbar = Snackbar.make(view, "Entry removed",
+                        Snackbar.LENGTH_LONG);
+                snackbar.setAction("Undo", v -> undoDelete());
+                snackbar.show();
+            }
+        });
+    }
+
+    private void undoDelete()
+    {
+        ObservationsDatabase
+                .getDatabase(observationsActivity)
+                .observationsDao()
+                .insert(recentlyDeletedItem);
+        updateList();
+        notifyItemInserted(recentlyDeletedItemPosition);
     }
 
     public void openEditOption(int position)

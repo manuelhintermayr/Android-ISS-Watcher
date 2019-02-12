@@ -380,7 +380,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             currentIndex = 0;
             endLatLng = getEndLatLng();
             beginLatLng = getBeginLatLng();
-
         }
 
         private void editLastTwoEntries() {
