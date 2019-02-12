@@ -10,11 +10,13 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
 import isswatcher.manuelweb.at.Services.ObservationsDatabase;
+import isswatcher.manuelweb.at.UI.ObservationsSwipeToDeleteCallback;
 import isswatcher.manuelweb.at.UI.ObservationsViewAdapter;
 
 /**
@@ -139,8 +141,12 @@ public class ObservationsActivity extends AppCompatActivity {
                 recyclerViewAdapter.openEditOption(position);
             }
         });
-    }
 
+        ItemTouchHelper itemTouchHelper = new
+                ItemTouchHelper(new ObservationsSwipeToDeleteCallback(recyclerViewAdapter));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+    }
 
     public void addEntry(View view) {
         startActivity(new Intent(this, AddEditObservationActivity.class));

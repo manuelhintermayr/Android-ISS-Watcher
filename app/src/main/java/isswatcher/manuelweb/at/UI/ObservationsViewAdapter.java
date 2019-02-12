@@ -21,7 +21,7 @@ import isswatcher.manuelweb.at.UI.Activities.AddEditObservationActivity;
 import isswatcher.manuelweb.at.UI.Activities.ObservationsActivity;
 
 public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsViewAdapter.ObservationsViewHolder> {
-    ObservationsActivity observationsActivity;
+    public ObservationsActivity observationsActivity;
     private List<Observation> observationList;
     private OnItemClickListener clickListener;
 
@@ -97,13 +97,14 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         holder.removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeItem(item, position);
+                removeItem(position);
             }
         });
 
     }
 
-    private void removeItem(Observation item, final int position) {
+    public void removeItem(final int position) {
+        final Observation item = observationList.get(position);
         ObservationsDatabase.getDatabase(observationsActivity)
                 .observationsDao()
                 .delete(item);
