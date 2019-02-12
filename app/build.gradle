@@ -30,11 +30,12 @@ dependencies {
     //material design
     implementation 'com.google.android.material:material:1.0.0-beta01'
     implementation 'androidx.cardview:cardview:1.0.0-beta01'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0-beta01'
     //google play services
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.squareup.okhttp:okhttp:2.0.0'
     implementation 'com.google.code.gson:gson:2.2.4'
-    implementation "android.arch.persistence.room:runtime:1.1.1"
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.0'
 }

@@ -10,13 +10,15 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
 import isswatcher.manuelweb.at.Services.ObservationsDatabase;
+import isswatcher.manuelweb.at.UI.ObservationsViewAdapter;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -42,7 +44,9 @@ public class ObservationsActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
-    private ListView listView;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter recyclerViewAdapter;
+    private LinearLayoutManager recyclerViewLayoutManager;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -103,7 +107,8 @@ public class ObservationsActivity extends AppCompatActivity {
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-        listView = (ListView) findViewById(R.id.list_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerViewLayoutManager = new LinearLayoutManager(this);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -129,7 +134,13 @@ public class ObservationsActivity extends AppCompatActivity {
                 .getAllEntries();
         final ArrayAdapter entriesAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, allEntries);
-        listView.setAdapter(entriesAdapter);
+
+
+        recyclerView.setHasFixedSize(true);
+        recyclerViewAdapter = new ObservationsViewAdapter(allEntries);
+
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+        recyclerView.setAdapter(recyclerViewAdapter);
     }
 
 

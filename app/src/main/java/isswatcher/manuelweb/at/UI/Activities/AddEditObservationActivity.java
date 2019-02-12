@@ -9,14 +9,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.util.Objects;
 
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.DAO.ObservationsDao;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
+import isswatcher.manuelweb.at.Services.Models.IssLocation;
 import isswatcher.manuelweb.at.Services.ObservationsDatabase;
 
 /**
@@ -47,6 +52,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private TextInputEditText latitudeTextField;
     private TextInputEditText longtitudeTextField;
     private TextInputEditText notesTextField;
+    private boolean isUpdateScreen = false;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -124,6 +130,15 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+
+        if(isUpdateScreen)
+        {
+            TextView title = findViewById(R.id.screenTitle);
+            title.setText("Update Entry");
+
+            Button updateButton = findViewById(R.id.actionButton);
+            updateButton.setText("Update Entry");
+        }
     }
 
     public void addUpdateEntry(View v)
@@ -133,16 +148,13 @@ public class AddEditObservationActivity extends AppCompatActivity {
         final float lng = Float.valueOf(longtitudeTextField.getText().toString());
         final String notes = notesTextField.getText().toString();
 
-        //ObservationsDao obsDao = ObservationsDatabase
-         //       .getInstance(context)
-           //d     .getRepoDao();
-
         ObservationsDatabase
                 .getDatabase(this)
                 .observationsDao()
                 .insert(new Observation(timestamp, lat, lng, notes));
 
         startActivity(new Intent(this, ObservationsActivity.class));
+        finish();
     }
 
     public void goBack(View v)
@@ -158,6 +170,9 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+
+        InfoUpdate infoUpdate = new InfoUpdate(this);
+        infoUpdate.start();
     }
 
     private void toggle() {
@@ -201,5 +216,39 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    public class InfoUpdate extends Thread {
+        AddEditObservationActivity mainActivity;
+
+        public InfoUpdate(AddEditObservationActivity mainActivity)
+        {
+            this.mainActivity = mainActivity;
+        }
+
+        public void run()
+        {
+            try {
+                final IssLocation currentLocation = IssLiveData.GetIssLocation();
+
+                if(timestampTextField.getText().toString().equals("")&&
+                        latitudeTextField.getText().toString().equals("")&&
+                        longtitudeTextField.getText().toString().equals(""))
+                {
+                    mainActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            timestampTextField.setText(Integer.toString(currentLocation.getTimestamp()));
+                            latitudeTextField.setText(Double.toString(currentLocation.getIssPosition().getLatitude()));
+                            longtitudeTextField.setText(Double.toString(currentLocation.getIssPosition().getLongitude()));
+                        }
+                    });
+                }
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

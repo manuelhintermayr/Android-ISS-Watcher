@@ -19,23 +19,26 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/add_entry"
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:textColor="#000"
-            android:onClick="addEntry"
-            android:textSize="24dp"
-            android:text="Add entry" />
+            android:layout_weight="0"
+            android:gravity="center"
+            android:text="@string/observations_activity_observations"
+            android:textColor="#fff"
+            android:textSize="50dp"
+            android:fontFamily="sans-serif" />
 
-        <ListView
-            android:id="@+id/list_view"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_margin="16dp"
+            android:scrollbars="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
