@@ -27,6 +27,8 @@
     <string name="add_edit_observation_activity_add_observation">Add Observation</string>
     <string name="add_edit_observation_activity_add_entry">Add Entry</string>
     <string name="add_edit_observation_activity_edit_observation">Edit Observation</string>
+    <string name="add_edit_observation_activity_add_image">Add Image</string>
+    <string name="add_edit_observation_activity_remove_all_images">Remove all images</string>
     <!-- end add/edit observation activity -->
 
     <!-- start observations activity -->

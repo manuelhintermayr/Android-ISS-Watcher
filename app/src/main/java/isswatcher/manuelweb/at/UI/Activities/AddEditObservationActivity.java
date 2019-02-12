@@ -5,6 +5,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -17,13 +19,16 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.core.content.ContextCompat;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.DAO.ObservationsDao;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
+import isswatcher.manuelweb.at.Services.Models.Entities.Picture;
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
 import isswatcher.manuelweb.at.Services.ObservationsDatabase;
 
@@ -55,8 +60,12 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private TextInputEditText latitudeTextField;
     private TextInputEditText longtitudeTextField;
     private TextInputEditText notesTextField;
+    private TextView countSelectedImages;
+    private Button addImageButton;
+    private Button removeAllImagesButton;
     private boolean isUpdateScreen = false;
     private Observation currentObservation;
+    private List<Picture> pictureList;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -121,7 +130,10 @@ public class AddEditObservationActivity extends AppCompatActivity {
         latitudeTextField = findViewById(R.id.latitudeTextfield);
         longtitudeTextField = findViewById(R.id.longitudeTextfield);
         notesTextField = findViewById(R.id.notesTextfield);
-
+        countSelectedImages = findViewById(R.id.countSelectedImages);
+        addImageButton = findViewById(R.id.addImageButton);
+        removeAllImagesButton = findViewById(R.id.removeAllImagesButton);
+        pictureList = new ArrayList<Picture>();
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +146,25 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+        countSelectedImages.setPaintFlags(countSelectedImages.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        removeAllImages(removeAllImagesButton);
+    }
+
+    public void addImage(View v)
+    {
+        pictureList.add(new Picture());
+
+        removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
+        removeAllImagesButton.setEnabled(true);
+        countSelectedImages.setText(Integer.toString(pictureList.size()));
+    }
+
+    public void removeAllImages(View v)
+    {
+        pictureList.clear();
+        countSelectedImages.setText("0");
+        removeAllImagesButton.setTextColor(Color.WHITE);
+        removeAllImagesButton.setEnabled(false);
     }
 
     public void addOrUpdateEntry(View v)
@@ -204,6 +235,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
             updateButton.setText("Update Entry");
 
             try{
+                //todo load images (and if, enable "removeAllImagesButton" + change text color)
                 currentObservation = loadObservationToUpdate();
                 timestampTextField.setText(Long.toString(currentObservation.timestamp));
                 latitudeTextField.setText(Float.toString(currentObservation.lat));
