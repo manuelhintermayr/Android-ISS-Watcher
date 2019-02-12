@@ -14,13 +14,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
+import isswatcher.manuelweb.at.Services.ObservationsDatabase;
+import isswatcher.manuelweb.at.UI.Activities.ObservationsActivity;
 
 public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsViewAdapter.ObservationsViewHolder> {
+    ObservationsActivity observationsActivity;
     private List<Observation> observationList;
 
-    public ObservationsViewAdapter(List<Observation> observationList)
+    public ObservationsViewAdapter(ObservationsActivity observationsActivity) {
+        this.observationsActivity = observationsActivity;
+        updateList();
+    }
+
+    public void updateList()
     {
-        this.observationList = observationList;
+        List<Observation> allEntries = ObservationsDatabase
+                .getDatabase(observationsActivity)
+                .observationsDao()
+                .getAllEntries();
+        observationList = allEntries;
     }
 
     @NonNull
@@ -33,6 +45,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
 
     @Override
     public void onBindViewHolder(@NonNull ObservationsViewHolder holder, int position) {
+        updateList();
         Observation item = observationList.get(position);
 
         //image manipulation

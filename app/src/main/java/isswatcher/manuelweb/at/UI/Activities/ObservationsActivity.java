@@ -128,12 +128,7 @@ public class ObservationsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        List<Observation> allEntries = ObservationsDatabase
-                .getDatabase(this)
-                .observationsDao()
-                .getAllEntries();
-
-        recyclerViewAdapter = new ObservationsViewAdapter(allEntries);
+        recyclerViewAdapter = new ObservationsViewAdapter(this);
 
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
