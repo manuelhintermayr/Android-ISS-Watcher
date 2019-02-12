@@ -153,6 +153,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
                     .getDatabase(this)
                     .observationsDao()
                     .insert(currentObservation);
+            //todo if picutres aviable, create inserts for them
         }
         else
         {
@@ -165,6 +166,8 @@ public class AddEditObservationActivity extends AppCompatActivity {
             ObservationsDatabase.getDatabase(this)
                     .observationsDao()
                     .update(currentObservation);
+
+            //todo if pictures aviable, ceck if new one are possible/old ones got deleted
 
             ObservationsActivity.INSTANCE.finish();
         }

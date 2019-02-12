@@ -111,6 +111,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         final Observation item = observationList.get(position);
         recentlyDeletedItem = item;
         recentlyDeletedItemPosition = position;
+            //todo: set deleted pictures into arraylist
 
         ObservationsDatabase.getDatabase(observationsActivity)
                 .observationsDao()
@@ -147,6 +148,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                 .getDatabase(observationsActivity)
                 .observationsDao()
                 .insert(recentlyDeletedItem);
+            //todo: get deleted pictures from arraylist and insert them in db
         updateList();
         notifyItemInserted(recentlyDeletedItemPosition);
     }
