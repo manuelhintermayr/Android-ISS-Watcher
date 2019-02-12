@@ -90,13 +90,13 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         holder.removeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeItem(item);
+                removeItem(item, position);
             }
         });
 
     }
 
-    private void removeItem(Observation item) {
+    private void removeItem(Observation item, final int position) {
         ObservationsDatabase.getDatabase(observationsActivity)
                 .observationsDao()
                 .delete(item);
@@ -105,7 +105,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         observationsActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                observationsActivity.recyclerViewAdapter.notifyDataSetChanged();
+                observationsActivity.recyclerViewAdapter.notifyItemRemoved(position);
             }
         });
     }
