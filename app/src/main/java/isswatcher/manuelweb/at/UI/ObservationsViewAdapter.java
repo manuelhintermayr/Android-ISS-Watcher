@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
@@ -22,10 +23,16 @@ import isswatcher.manuelweb.at.UI.Activities.ObservationsActivity;
 public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsViewAdapter.ObservationsViewHolder> {
     ObservationsActivity observationsActivity;
     private List<Observation> observationList;
+    private OnItemClickListener clickListener;
 
     public ObservationsViewAdapter(ObservationsActivity observationsActivity) {
         this.observationsActivity = observationsActivity;
         updateList();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener)
+    {
+        clickListener = listener;
     }
 
     public void updateList()
@@ -41,7 +48,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     @Override
     public ObservationsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.observation_element, parent, false);
-        ObservationsViewHolder ovh = new ObservationsViewHolder(v);
+        ObservationsViewHolder ovh = new ObservationsViewHolder(v, clickListener);
         return ovh;
     }
 
@@ -80,7 +87,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                 observationsActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        openEditOption(item);
+                        openEditOption(position);
                     }
                 });
             }
@@ -110,8 +117,9 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         });
     }
 
-    public void openEditOption(Observation item)
+    public void openEditOption(int position)
     {
+        final Observation item = observationList.get(position);
         Intent intent = new Intent(observationsActivity, AddEditObservationActivity.class);
         intent.putExtra("updateEntryId",Integer.toString(item.id));
         observationsActivity.startActivity(intent);
@@ -122,7 +130,12 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         return observationList.size();
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
     public static class ObservationsViewHolder extends RecyclerView.ViewHolder{
+        public CardView cardView;
         public ImageView image;
 
         public TextView location;
@@ -132,15 +145,28 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         public Button editButton;
         public Button removeButton;
 
-        public ObservationsViewHolder(@NonNull View itemView) {
+        public ObservationsViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
 
+            cardView = itemView.findViewById(R.id.cardView);
             image = itemView.findViewById(R.id.issImageView);
             location = itemView.findViewById(R.id.observationLocation);
             headline = itemView.findViewById(R.id.observationTime);
             description = itemView.findViewById(R.id.observationNotes);
             editButton = itemView.findViewById(R.id.editButton);
             removeButton = itemView.findViewById(R.id.removeButton);
+
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
     }
 

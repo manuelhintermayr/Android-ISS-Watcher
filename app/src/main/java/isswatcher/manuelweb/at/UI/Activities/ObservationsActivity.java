@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-
-import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +42,7 @@ public class ObservationsActivity extends AppCompatActivity {
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private RecyclerView recyclerView;
-    public RecyclerView.Adapter recyclerViewAdapter;
+    public ObservationsViewAdapter recyclerViewAdapter;
     private LinearLayoutManager recyclerViewLayoutManager;
     public static ObservationsActivity INSTANCE;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -135,6 +132,13 @@ public class ObservationsActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        recyclerViewAdapter.setOnItemClickListener(new ObservationsViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                recyclerViewAdapter.openEditOption(position);
+            }
+        });
     }
 
 
