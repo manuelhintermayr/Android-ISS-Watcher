@@ -136,18 +136,38 @@ public class AddEditObservationActivity extends AppCompatActivity {
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
     }
 
-    public void addUpdateEntry(View v)
+    public void addOrUpdateEntry(View v)
     {
         final long timestamp = Long.valueOf(timestampTextField.getText().toString());
         final float lat = Float.valueOf(latitudeTextField.getText().toString());
         final float lng = Float.valueOf(longtitudeTextField.getText().toString());
         final String notes = notesTextField.getText().toString();
-        currentObservation = new Observation(timestamp, lat, lng, notes);
 
-        ObservationsDatabase
-                .getDatabase(this)
-                .observationsDao()
-                .insert(currentObservation);
+
+        if(!isUpdateScreen)
+        {
+            //add entry
+            currentObservation = new Observation(timestamp, lat, lng, notes);
+
+            ObservationsDatabase
+                    .getDatabase(this)
+                    .observationsDao()
+                    .insert(currentObservation);
+        }
+        else
+        {
+            //update entry
+            currentObservation.timestamp = timestamp;
+            currentObservation.lat = lat;
+            currentObservation.lng = lng;
+            currentObservation.notes = notes;
+
+            ObservationsDatabase.getDatabase(this)
+                    .observationsDao()
+                    .update(currentObservation);
+
+            ObservationsActivity.INSTANCE.finish();
+        }
 
         startActivity(new Intent(this, ObservationsActivity.class));
         finish();

@@ -83,7 +83,6 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                         Intent intent = new Intent(observationsActivity, AddEditObservationActivity.class);
                         intent.putExtra("updateEntryId",Integer.toString(item.id));
                         observationsActivity.startActivity(intent);
-                        observationsActivity.finish();
                     }
                 });
             }

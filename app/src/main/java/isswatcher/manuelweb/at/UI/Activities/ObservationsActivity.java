@@ -47,6 +47,7 @@ public class ObservationsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter recyclerViewAdapter;
     private LinearLayoutManager recyclerViewLayoutManager;
+    public static ObservationsActivity INSTANCE;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -103,6 +104,8 @@ public class ObservationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_observations);
+
+        INSTANCE = this;
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
