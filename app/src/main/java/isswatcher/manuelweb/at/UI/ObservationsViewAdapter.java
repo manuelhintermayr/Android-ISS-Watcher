@@ -46,7 +46,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ObservationsViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ObservationsViewHolder holder, final int position) {
         updateList();
         final Observation item = observationList.get(position);
 
@@ -80,16 +80,41 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                 observationsActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(observationsActivity, AddEditObservationActivity.class);
-                        intent.putExtra("updateEntryId",Integer.toString(item.id));
-                        observationsActivity.startActivity(intent);
+                        openEditOption(item);
                     }
                 });
             }
         });
 
         //remove button manipulation
-            //todo
+        holder.removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeItem(item);
+            }
+        });
+
+    }
+
+    private void removeItem(Observation item) {
+        ObservationsDatabase.getDatabase(observationsActivity)
+                .observationsDao()
+                .delete(item);
+        updateList();
+
+        observationsActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                observationsActivity.recyclerViewAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    public void openEditOption(Observation item)
+    {
+        Intent intent = new Intent(observationsActivity, AddEditObservationActivity.class);
+        intent.putExtra("updateEntryId",Integer.toString(item.id));
+        observationsActivity.startActivity(intent);
     }
 
     @Override

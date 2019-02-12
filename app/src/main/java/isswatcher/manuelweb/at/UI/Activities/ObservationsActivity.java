@@ -45,7 +45,7 @@ public class ObservationsActivity extends AppCompatActivity {
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter recyclerViewAdapter;
+    public RecyclerView.Adapter recyclerViewAdapter;
     private LinearLayoutManager recyclerViewLayoutManager;
     public static ObservationsActivity INSTANCE;
     private final Runnable mHidePart2Runnable = new Runnable() {
