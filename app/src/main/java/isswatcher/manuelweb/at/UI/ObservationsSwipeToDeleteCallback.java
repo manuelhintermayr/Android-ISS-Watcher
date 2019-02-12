@@ -15,7 +15,7 @@ import isswatcher.manuelweb.at.R;
 public class ObservationsSwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
     private ObservationsViewAdapter mAdapter;
 
-    //got partly the code from https://medium.com/@zackcosborn/step-by-step-recyclerview-swipe-to-delete-and-undo-7bbae1fce27e 
+    //got partly the code from https://medium.com/@zackcosborn/step-by-step-recyclerview-swipe-to-delete-and-undo-7bbae1fce27e
 
     public ObservationsSwipeToDeleteCallback(ObservationsViewAdapter adapter) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);

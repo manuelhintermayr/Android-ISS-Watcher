@@ -114,6 +114,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
             @Override
             public void run() {
                 observationsActivity.recyclerViewAdapter.notifyItemRemoved(position);
+                observationsActivity.recyclerViewAdapter.notifyDataSetChanged();
             }
         });
     }
