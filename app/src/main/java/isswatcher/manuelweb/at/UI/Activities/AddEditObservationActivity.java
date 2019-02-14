@@ -311,9 +311,17 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
         pictureList.add(new Picture(imageUri.toString()));
 
-        removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
-        removeAllImagesButton.setEnabled(true);
-        countSelectedImages.setText(Integer.toString(pictureList.size()));
+        updateImageButtons();
+    }
+
+    private void updateImageButtons()
+    {
+        if(pictureList.size()>0)
+        {
+            removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
+            removeAllImagesButton.setEnabled(true);
+            countSelectedImages.setText(Integer.toString(pictureList.size()));
+        }
     }
 
 
@@ -408,8 +416,8 @@ public class AddEditObservationActivity extends AppCompatActivity {
             updateButton.setText("Update Entry");
 
             try{
-                //todo load images (and if, enable "removeAllImagesButton" + change text color)
                 currentObservation = loadObservationToUpdate();
+                loadPicturesForId(currentObservation.id);
                 timestampTextField.setText(Long.toString(currentObservation.timestamp));
                 latitudeTextField.setText(Float.toString(currentObservation.lat));
                 longtitudeTextField.setText(Float.toString(currentObservation.lng));
@@ -428,6 +436,19 @@ public class AddEditObservationActivity extends AppCompatActivity {
         {
             InfoUpdate infoUpdate = new InfoUpdate(this);
             infoUpdate.start();
+        }
+    }
+
+    private void loadPicturesForId(int observationId) {
+
+        pictureList = ObservationsDatabase
+                .getDatabase(this)
+                .pictureDao()
+                .getEntriesByObservationId(observationId);
+        if(pictureList.size()>0)
+        {
+            updateImageButtons();
+            currentImage.setImageURI(Uri.parse(pictureList.get(pictureList.size()-1).picture_id));
         }
     }
 

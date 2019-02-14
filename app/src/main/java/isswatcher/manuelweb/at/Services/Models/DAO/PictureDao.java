@@ -14,10 +14,12 @@ public interface PictureDao {
     @Insert
     void insert(Picture entry);
 
-    @Query("SELECT * FROM pictures")
+    @Query("SELECT * FROM pictures ORDER BY picture_id")
     List<Picture> getAllEntries();
+
+    @Query("SELECT * FROM pictures WHERE observation_id = :observationId ORDER BY picture_id")
+    List<Picture> getEntriesByObservationId(int observationId);
 
     @Delete
     void delete(Picture entry);
-
 }
