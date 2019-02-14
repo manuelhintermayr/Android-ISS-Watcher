@@ -5,17 +5,21 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,8 +73,6 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private Button addImageButton;
     private Button removeAllImagesButton;
     private ImageView currentImage;
-    private int imageHeight = 0;
-    private int imageWidth = 0;
     private boolean isUpdateScreen = false;
     private Observation currentObservation;
     private List<Picture> pictureList;
@@ -161,6 +163,46 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     public void addImage(View v)
     {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog dialog = builder
+                .setTitle("Image")
+                .setMessage("Choose the image location")
+                .setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                        addImageFromGallery();
+                    }
+                })
+                .setNegativeButton("Camera", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        addImageFromCamera();
+                    }
+                }).create();
+
+        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                params.setMargins(0,0,24,0);
+
+                Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+                negativeButton.setTextColor(Color.BLACK);
+                positiveButton.setTextColor(Color.BLACK);
+                negativeButton.setLayoutParams(params);
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void addImageFromGallery()
+    {
         //got from https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
         getIntent.setType("image/*");
@@ -172,6 +214,11 @@ public class AddEditObservationActivity extends AppCompatActivity {
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
 
         startActivityForResult(chooserIntent, PICK_IMAGE);
+    }
+
+    private void addImageFromCamera()
+    {
+
     }
 
     @Override
@@ -191,8 +238,6 @@ public class AddEditObservationActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    //currentImage.setMaxHeight(imageHeight);
-                    //currentImage.setMaxWidth(imageWidth);
                 }
             });
             //currentImage.
@@ -282,9 +327,6 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
-
-        imageHeight = currentImage.getHeight();
-        imageWidth = currentImage.getWidth();
 
         if((getIntent().getStringExtra("updateEntryId")!=null))
         {
