@@ -77,7 +77,16 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         holder.headline.setText(DateManipulation.getDateByUnixTimestamp(item.timestamp, "dd.MM.yyyy - HH:mm:ss"));
 
         //imageslider
-            //todo
+        List<Picture> pictureList = getPictureListByObservationsId(item.id);
+        if(pictureList.size()==0)
+        {
+            holder.imageFlipper.setVisibility(View.GONE);
+        }
+        else
+        {
+            ImageFlipAdapter adapter = new ImageFlipAdapter(observationsActivity, pictureList);
+            holder.imageFlipper.setAdapter(adapter);
+        }
 
         //notes manipulation
         if(item.notes.equals(""))
@@ -112,6 +121,13 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
             }
         });
 
+    }
+
+    private List<Picture> getPictureListByObservationsId(int observationId) {
+        return ObservationsDatabase
+                .getDatabase(observationsActivity)
+                .pictureDao()
+                .getEntriesByObservationId(observationId);
     }
 
     public void removeItem(final int position) {
@@ -222,10 +238,6 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
             imageFlipper = itemView.findViewById(R.id.imageFlipper);
             editButton = itemView.findViewById(R.id.editButton);
             removeButton = itemView.findViewById(R.id.removeButton);
-
-
-            ImageFlipAdapter adapter = new ImageFlipAdapter(context);
-            imageFlipper.setAdapter(adapter);
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
