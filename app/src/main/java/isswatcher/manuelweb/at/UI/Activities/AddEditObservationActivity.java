@@ -31,8 +31,11 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -420,6 +423,33 @@ public class AddEditObservationActivity extends AppCompatActivity {
         }
     }
 
+    private void cleanUpOldNotUsedPictures() {
+        List<Picture> totalPictureList = ObservationsDatabase
+                .getDatabase(this)
+                .pictureDao()
+                .getAllEntries();
+        boolean picturesInDatabase = totalPictureList.size()>0 ? true : false;
+
+        if(picturesInDatabase)
+        {
+            Picture[] totalPictureArray = new Picture[totalPictureList.size()];
+            totalPictureList.toArray(totalPictureArray);
+            Object[] result = Arrays.stream(totalPictureArray).map(o -> convertUriStringToFileName(o.picture_id)).toArray();
+            String[] pictureNameArray = Arrays.copyOf(result, result.length, String[].class);
+
+            List<String> usedPictureNames = Arrays.asList(pictureNameArray);
+        }
+
+
+
+
+    }
+
+    private String convertUriStringToFileName(String uriString)
+    {
+        return Paths.get(uriString).getFileName().toString();
+    }
+
     public void goBack(View v)
     {
         finish();
@@ -580,6 +610,8 @@ public class AddEditObservationActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            cleanUpOldNotUsedPictures();
         }
     }
 }
