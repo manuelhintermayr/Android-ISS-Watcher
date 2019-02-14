@@ -21,6 +21,9 @@ public interface ObservationsDao {
     @Query("SELECT * FROM observations WHERE id = :id")
     Observation getElementById(int id);
 
+    @Query("SELECT * FROM observations WHERE timestamp = :timestamp")
+    Observation getElementByTimestamp(long timestamp);
+
     @Update
     void update(Observation entry);
 

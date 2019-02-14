@@ -342,7 +342,22 @@ public class AddEditObservationActivity extends AppCompatActivity {
                     .getDatabase(this)
                     .observationsDao()
                     .insert(currentObservation);
-                //todo if picutres aviable, create inserts for them
+
+            int newObservationId = getObservationByTimestamp(currentObservation.timestamp).id;
+
+            if(pictureList.size()>0)
+            {
+                for(int i=0;i<pictureList.size();i++)
+                {
+                    Picture currentPicture = pictureList.get(i);
+                    currentPicture.observation_id = newObservationId;
+
+                    ObservationsDatabase
+                            .getDatabase(this)
+                            .pictureDao()
+                            .insert(currentPicture);
+                }
+            }
         }
         else
         {
@@ -423,6 +438,14 @@ public class AddEditObservationActivity extends AppCompatActivity {
                 .getElementById(Integer.valueOf(
                         getIntent().getStringExtra("updateEntryId")
                 ));
+    }
+
+    private Observation getObservationByTimestamp(long timestamp)
+    {
+        return ObservationsDatabase
+                .getDatabase(this)
+                .observationsDao()
+                .getElementByTimestamp(timestamp);
     }
 
     private void toggle() {
