@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
+import isswatcher.manuelweb.at.Services.Models.Entities.Picture;
 import isswatcher.manuelweb.at.Services.ObservationsDatabase;
 import isswatcher.manuelweb.at.UI.Activities.AddEditObservationActivity;
 import isswatcher.manuelweb.at.UI.Activities.ObservationsActivity;
@@ -27,6 +28,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     private List<Observation> observationList;
     private OnItemClickListener clickListener;
     Observation recentlyDeletedItem;
+    List<Picture> recentlyDeletedPictureList;
     int recentlyDeletedItemPosition;
 
     public ObservationsViewAdapter(ObservationsActivity observationsActivity) {
@@ -39,13 +41,14 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         clickListener = listener;
     }
 
-    public void updateList()
+    public List<Observation> updateList()
     {
         List<Observation> allEntries = ObservationsDatabase
                 .getDatabase(observationsActivity)
                 .observationsDao()
                 .getAllEntries();
         observationList = allEntries;
+        return allEntries;
     }
 
     @NonNull
@@ -59,18 +62,20 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     @Override
     public void onBindViewHolder(@NonNull ObservationsViewHolder holder, final int position) {
         updateList();
-        final Observation item = observationList.get(position);
+        final Observation item = updateList().get(position);
 
         //image manipulation
         holder.image.setMaxHeight(64);
         holder.image.setMaxWidth(64);
-            //todo: call to check if images are aviable for this entry
 
         //location manipulation
         holder.location.setText(item.lat + " / " + item.lng);
 
         //time manipulation
         holder.headline.setText(DateManipulation.getDateByUnixTimestamp(item.timestamp, "dd.MM.yyyy - HH:mm:ss"));
+
+        //imageslider
+            //todo
 
         //notes manipulation
         if(item.notes.equals(""))
@@ -111,18 +116,32 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         final Observation item = observationList.get(position);
         recentlyDeletedItem = item;
         recentlyDeletedItemPosition = position;
-            //todo: set deleted pictures into arraylist
+        recentlyDeletedPictureList = ObservationsDatabase
+                .getDatabase(observationsActivity)
+                .pictureDao()
+                .getEntriesByObservationId(item.id);
 
         ObservationsDatabase.getDatabase(observationsActivity)
                 .observationsDao()
                 .delete(item);
+
+        for(int i = 0;i<recentlyDeletedPictureList.size(); i++)
+        {
+            ObservationsDatabase
+                    .getDatabase(observationsActivity)
+                    .pictureDao()
+                    .delete(recentlyDeletedPictureList.get(i));
+
+            // delete of local images will not be done here, due to the fact that deleting can be made "undone",
+            // real deleting will occur in check in add/editOBservationsActivity
+        }
+
         updateList();
 
         observationsActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 observationsActivity.recyclerViewAdapter.notifyItemRemoved(position);
-                observationsActivity.recyclerViewAdapter.notifyDataSetChanged();
             }
         });
 
@@ -148,7 +167,15 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
                 .getDatabase(observationsActivity)
                 .observationsDao()
                 .insert(recentlyDeletedItem);
-            //todo: get deleted pictures from arraylist and insert them in db
+
+        for(int i = 0;i<recentlyDeletedPictureList.size(); i++)
+        {
+            ObservationsDatabase
+                    .getDatabase(observationsActivity)
+                    .pictureDao()
+                    .insert(recentlyDeletedPictureList.get(i));
+        }
+
         updateList();
         notifyItemInserted(recentlyDeletedItemPosition);
     }
@@ -163,7 +190,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
 
     @Override
     public int getItemCount() {
-        return observationList.size();
+        return updateList().size();
     }
 
     public interface OnItemClickListener {
