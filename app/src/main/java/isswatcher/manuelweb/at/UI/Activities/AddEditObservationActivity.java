@@ -8,11 +8,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -25,6 +27,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -63,6 +66,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
      */
     private static final int UI_ANIMATION_DELAY = 300;
     public static final int PICK_IMAGE = 123;
+    private static final int REQUEST_CAPTURE_IMAGE = 124;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private TextInputEditText timestampTextField;
@@ -218,39 +222,47 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     private void addImageFromCamera()
     {
-
+        Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String uriPath = MediaStore.Images.Media.insertImage(this.getContentResolver(), imageBitmap, "CameraPhoto", null);
+
+            currentImage.setImageBitmap(imageBitmap);
+
+            addImage(data.getData());
+        }
+
         if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
 
             Uri imageUri = data.getData();
-            currentImage.setImageURI(imageUri);
-
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            //currentImage.
-            //InputStream inputStream = getContentResolver().openInputStream(data.getData());
-
-            pictureList.add(new Picture(data.getData().toString()));
-
-            removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
-            removeAllImagesButton.setEnabled(true);
-            countSelectedImages.setText(Integer.toString(pictureList.size()));
-            //TODO: action
+            addImage(imageUri);
         }
     }
+
+    private void addImage(Uri imageUri)
+    {
+        currentImage.setImageURI(imageUri);
+
+        pictureList.add(new Picture(imageUri.toString()));
+
+        removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
+        removeAllImagesButton.setEnabled(true);
+        countSelectedImages.setText(Integer.toString(pictureList.size()));
+    }
+
 
     public void removeAllImages(View v)
     {
