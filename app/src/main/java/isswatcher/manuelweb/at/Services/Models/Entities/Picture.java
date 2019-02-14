@@ -24,6 +24,7 @@ public class Picture {
 
     public Picture(@NonNull String picture_id) {
         this.picture_id = picture_id;
+        this.observation_id = -1;
     }
 }
 

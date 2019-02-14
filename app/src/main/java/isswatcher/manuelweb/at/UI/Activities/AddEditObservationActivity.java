@@ -81,6 +81,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private ImageView currentImage;
     private String lastPicturePath;
     private boolean isUpdateScreen = false;
+    private boolean pressedRemoveAllPictures = false;
     private Observation currentObservation;
     private List<Picture> pictureList;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -166,6 +167,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
         findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
         countSelectedImages.setPaintFlags(countSelectedImages.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         removeAllImages(removeAllImagesButton);
+        pressedRemoveAllPictures = false;
     }
 
     public void addImage(View v)
@@ -332,6 +334,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
         countSelectedImages.setText("0");
         removeAllImagesButton.setTextColor(Color.WHITE);
         removeAllImagesButton.setEnabled(false);
+        pressedRemoveAllPictures = true;
     }
 
     public void addOrUpdateEntry(View v)
@@ -353,19 +356,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
             int newObservationId = getObservationByTimestamp(currentObservation.timestamp).id;
 
-            if(pictureList.size()>0)
-            {
-                for(int i=0;i<pictureList.size();i++)
-                {
-                    Picture currentPicture = pictureList.get(i);
-                    currentPicture.observation_id = newObservationId;
-
-                    ObservationsDatabase
-                            .getDatabase(this)
-                            .pictureDao()
-                            .insert(currentPicture);
-                }
-            }
+            addCurrentImageListToDatabase(newObservationId);
         }
         else
         {
@@ -379,13 +370,54 @@ public class AddEditObservationActivity extends AppCompatActivity {
                 .observationsDao()
                 .update(currentObservation);
 
-            //todo if pictures aviable, check if new one are possible/old ones got deleted
+            if(pressedRemoveAllPictures)
+            {
+                List<Picture> oldPictureList = getPictureListFromDatabase(currentObservation.id);
+                if(oldPictureList.size()>0)
+                {
+                    //remove old entries
+                    for(int i=0;i<oldPictureList.size();i++)
+                    {
+                        Picture currentOldPicture = oldPictureList.get(i);
+
+                        ObservationsDatabase.getDatabase(this)
+                                .pictureDao()
+                                .delete(currentOldPicture);
+                    }
+
+                    //add new entries
+                    addCurrentImageListToDatabase(currentObservation.id);
+                }
+            }
+            else{
+                //add missing entries
+                addCurrentImageListToDatabase(currentObservation.id);
+            }
 
             ObservationsActivity.INSTANCE.finish();
         }
 
         startActivity(new Intent(this, ObservationsActivity.class));
         finish();
+    }
+
+    private void addCurrentImageListToDatabase(int newObservationId) {
+        if(pictureList.size()>0)
+        {
+            for(int i=0;i<pictureList.size();i++)
+            {
+                Picture currentPicture = pictureList.get(i);
+                if(currentPicture.observation_id==-1)
+                {
+                    currentPicture.observation_id = newObservationId;
+
+                    ObservationsDatabase
+                            .getDatabase(this)
+                            .pictureDao()
+                            .insert(currentPicture);
+                }
+            }
+        }
     }
 
     public void goBack(View v)
@@ -441,15 +473,20 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     private void loadPicturesForId(int observationId) {
 
-        pictureList = ObservationsDatabase
-                .getDatabase(this)
-                .pictureDao()
-                .getEntriesByObservationId(observationId);
+        pictureList = getPictureListFromDatabase(observationId);
         if(pictureList.size()>0)
         {
             updateImageButtons();
             currentImage.setImageURI(Uri.parse(pictureList.get(pictureList.size()-1).picture_id));
         }
+    }
+
+    private List<Picture> getPictureListFromDatabase(int observationId)
+    {
+        return ObservationsDatabase
+                .getDatabase(this)
+                .pictureDao()
+                .getEntriesByObservationId(observationId);
     }
 
     private Observation loadObservationToUpdate() {
