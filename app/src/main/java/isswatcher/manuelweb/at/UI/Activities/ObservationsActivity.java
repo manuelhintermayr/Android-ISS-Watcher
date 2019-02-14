@@ -144,7 +144,7 @@ public class ObservationsActivity extends AppCompatActivity {
 
         ItemTouchHelper itemTouchHelper = new
                 ItemTouchHelper(new ObservationsSwipeToDeleteCallback(recyclerViewAdapter));
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        //itemTouchHelper.attachToRecyclerView(recyclerView);
 
     }
 

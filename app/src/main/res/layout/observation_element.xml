@@ -50,10 +50,16 @@
             android:text="ISS is currently over Australia"
             android:textSize="16dp" />
 
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/imageFlipper"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/observationNotes"
+            android:layout_height="64dp" />
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/observationNotes">
+            android:layout_below="@+id/imageFlipper">
 
             <Button
                 android:id="@+id/editButton"

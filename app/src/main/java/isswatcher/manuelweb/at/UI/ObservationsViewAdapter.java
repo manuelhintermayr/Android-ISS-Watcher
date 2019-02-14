@@ -1,5 +1,6 @@
 package isswatcher.manuelweb.at.UI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Infrastructure.DateManipulation;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
@@ -55,7 +57,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     @Override
     public ObservationsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.observation_element, parent, false);
-        ObservationsViewHolder ovh = new ObservationsViewHolder(v, clickListener);
+        ObservationsViewHolder ovh = new ObservationsViewHolder(v, clickListener, observationsActivity);
         return ovh;
     }
 
@@ -80,13 +82,13 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         //notes manipulation
         if(item.notes.equals(""))
         {
-            holder.description.setVisibility(View.GONE);
+            holder.notes.setVisibility(View.GONE);
         }
         else{
             String notesContent = item.notes;
             notesContent = notesContent.replace('\n',' ');
             notesContent = notesContent.length()>30 ? notesContent.substring(0,30)+"..." : notesContent;
-            holder.description.setText(notesContent);
+            holder.notes.setText(notesContent);
         }
 
         //edit button manipulation
@@ -203,21 +205,27 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
 
         public TextView location;
         public TextView headline;
-        public TextView description;
+        public TextView notes;
+        public ViewPager imageFlipper;
 
         public Button editButton;
         public Button removeButton;
 
-        public ObservationsViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
+        public ObservationsViewHolder(@NonNull View itemView, final OnItemClickListener listener, Context context) {
             super(itemView);
 
             cardView = itemView.findViewById(R.id.cardView);
             image = itemView.findViewById(R.id.issImageView);
             location = itemView.findViewById(R.id.observationLocation);
             headline = itemView.findViewById(R.id.observationTime);
-            description = itemView.findViewById(R.id.observationNotes);
+            notes = itemView.findViewById(R.id.observationNotes);
+            imageFlipper = itemView.findViewById(R.id.imageFlipper);
             editButton = itemView.findViewById(R.id.editButton);
             removeButton = itemView.findViewById(R.id.removeButton);
+
+
+            ImageFlipAdapter adapter = new ImageFlipAdapter(context);
+            imageFlipper.setAdapter(adapter);
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
