@@ -264,6 +264,10 @@ public class AddEditObservationActivity extends AppCompatActivity {
             }
             catch (IOException e) {
                 e.printStackTrace();
+                String errorMessage = "The following error occured: "+e.getMessage();
+
+                Log.e("savingImage", errorMessage);
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
                 return;
             }
             Uri photoUri = FileProvider.getUriForFile(AddEditObservationActivity.this, AddEditObservationActivity.this.getPackageName() +".provider", photoFile);
@@ -271,27 +275,6 @@ public class AddEditObservationActivity extends AppCompatActivity {
             pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
         }
-
-
-
-
-        //Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        //File imageFile = null;
-        //try {
-        //    imageFile = FileOperations.createNewImageTempFile(this);
-
-        //    Uri imageUri = Uri.fromFile(imageFile);
-
-        //    pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        //    pictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-
-        //    if(pictureIntent.resolveActivity(getPackageManager()) != null) {
-        //        startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
-        //    }
-        //} catch (IOException e) {
-        //    e.printStackTrace();
-        //}
     }
 
     @Override
@@ -299,28 +282,9 @@ public class AddEditObservationActivity extends AppCompatActivity {
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK){ //&& data.getExtras() != null) {
-            //Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-
-            //imageView.setImageURI(Uri.parse(imageFilePath));
-
-            //try {
-                //String imgSaved=MediaStore.Images.Media.insertImage(getContentResolver(),mFile.getAbsolutePath(), , "drawing");
-
-                //ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                //imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                //String uriPath = MediaStore.Images.Media.insertImage(this.getContentResolver(), imageBitmap, "CameraPhoto", null);
-
-                //currentImage.setImageBitmap(imageBitmap);
-
-                Uri imageUri = Uri.parse(lastPicturePath);
-                addImage(imageUri);
-            //} catch (FileNotFoundException e) {
-            //    String errorMessage = "The following error occured: "+e.getMessage();
-
-            //    Log.e("savingImage", errorMessage);
-            //    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-            //}
+        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK){
+            Uri imageUri = Uri.parse(lastPicturePath);
+            addImage(imageUri);
         }
 
         if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
@@ -350,57 +314,43 @@ public class AddEditObservationActivity extends AppCompatActivity {
         removeAllImagesButton.setEnabled(false);
     }
 
-    public boolean checkInput()
-    {
-        //try{
-            final long timestamp = Long.valueOf(timestampTextField.getText().toString());
-            final float lat = Float.valueOf(latitudeTextField.getText().toString());
-            final float lng = Float.valueOf(longtitudeTextField.getText().toString());
-        //} catch (IOException e){ }
-        return true;
-    }
-
     public void addOrUpdateEntry(View v)
     {
-        if(checkInput())
+        final long timestamp = Long.valueOf(timestampTextField.getText().toString());
+        final float lat = Float.valueOf(latitudeTextField.getText().toString());
+        final float lng = Float.valueOf(longtitudeTextField.getText().toString());
+        final String notes = notesTextField.getText().toString();
+
+        if(!isUpdateScreen)
         {
-            final long timestamp = Long.valueOf(timestampTextField.getText().toString());
-            final float lat = Float.valueOf(latitudeTextField.getText().toString());
-            final float lng = Float.valueOf(longtitudeTextField.getText().toString());
-            final String notes = notesTextField.getText().toString();
+            //add entry
+            currentObservation = new Observation(timestamp, lat, lng, notes);
 
-
-            if(!isUpdateScreen)
-            {
-                //add entry
-                currentObservation = new Observation(timestamp, lat, lng, notes);
-
-                ObservationsDatabase
-                        .getDatabase(this)
-                        .observationsDao()
-                        .insert(currentObservation);
+            ObservationsDatabase
+                    .getDatabase(this)
+                    .observationsDao()
+                    .insert(currentObservation);
                 //todo if picutres aviable, create inserts for them
-            }
-            else
-            {
-                //update entry
-                currentObservation.timestamp = timestamp;
-                currentObservation.lat = lat;
-                currentObservation.lng = lng;
-                currentObservation.notes = notes;
-
-                ObservationsDatabase.getDatabase(this)
-                        .observationsDao()
-                        .update(currentObservation);
-
-                //todo if pictures aviable, ceck if new one are possible/old ones got deleted
-
-                ObservationsActivity.INSTANCE.finish();
-            }
-
-            startActivity(new Intent(this, ObservationsActivity.class));
-            finish();
         }
+        else
+        {
+            //update entry
+            currentObservation.timestamp = timestamp;
+            currentObservation.lat = lat;
+            currentObservation.lng = lng;
+            currentObservation.notes = notes;
+
+            ObservationsDatabase.getDatabase(this)
+                .observationsDao()
+                .update(currentObservation);
+
+            //todo if pictures aviable, ceck if new one are possible/old ones got deleted
+
+            ObservationsActivity.INSTANCE.finish();
+        }
+
+        startActivity(new Intent(this, ObservationsActivity.class));
+        finish();
     }
 
     public void goBack(View v)
