@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -80,6 +81,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         List<Picture> pictureList = getPictureListByObservationsId(item.id);
         if(pictureList.size()==0)
         {
+            //holder.imageFlipperWrap.setVisibility(View.GONE);
             holder.imageFlipper.setVisibility(View.GONE);
         }
         else
@@ -222,6 +224,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         public TextView location;
         public TextView headline;
         public TextView notes;
+        public LinearLayout imageFlipperWrap;
         public ViewPager imageFlipper;
 
         public Button editButton;
@@ -235,6 +238,7 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
             location = itemView.findViewById(R.id.observationLocation);
             headline = itemView.findViewById(R.id.observationTime);
             notes = itemView.findViewById(R.id.observationNotes);
+            imageFlipperWrap = itemView.findViewById(R.id.imageFlipperWrap);
             imageFlipper = itemView.findViewById(R.id.imageFlipper);
             editButton = itemView.findViewById(R.id.editButton);
             removeButton = itemView.findViewById(R.id.removeButton);

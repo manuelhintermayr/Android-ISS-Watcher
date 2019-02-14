@@ -41,7 +41,7 @@ public class ImageFlipAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         ImageView imageView = new ImageView(activity);
-        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         imageView.setImageURI(imageUris[position]);
         container.addView(imageView, 0);
         return imageView;

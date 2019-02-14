@@ -41,25 +41,35 @@
             android:textSize="20dp"
             android:textStyle="bold" />
 
+        <LinearLayout
+            android:id="@+id/imageFlipperWrap"
+            android:layout_below="@+id/observationTime"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/shape">
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/imageFlipper"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                 />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/observationNotes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/observationTime"
+            android:layout_below="@+id/imageFlipperWrap"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp"
             android:text="ISS is currently over Australia"
             android:textSize="16dp" />
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/imageFlipper"
-            android:layout_width="match_parent"
-            android:layout_below="@+id/observationNotes"
-            android:layout_height="64dp" />
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imageFlipper">
+            android:layout_below="@id/observationNotes">
 
             <Button
                 android:id="@+id/editButton"
