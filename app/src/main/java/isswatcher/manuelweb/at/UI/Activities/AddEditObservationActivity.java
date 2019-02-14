@@ -4,21 +4,25 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -54,6 +58,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
+    public static final int PICK_IMAGE = 123;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private TextInputEditText timestampTextField;
@@ -63,6 +68,9 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private TextView countSelectedImages;
     private Button addImageButton;
     private Button removeAllImagesButton;
+    private ImageView currentImage;
+    private int imageHeight = 0;
+    private int imageWidth = 0;
     private boolean isUpdateScreen = false;
     private Observation currentObservation;
     private List<Picture> pictureList;
@@ -133,6 +141,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
         countSelectedImages = findViewById(R.id.countSelectedImages);
         addImageButton = findViewById(R.id.addImageButton);
         removeAllImagesButton = findViewById(R.id.removeAllImagesButton);
+        currentImage = findViewById(R.id.currentImage);
         pictureList = new ArrayList<Picture>();
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -152,59 +161,112 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     public void addImage(View v)
     {
-        pictureList.add(new Picture());
+        //got from https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
+        Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        getIntent.setType("image/*");
 
-        removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
-        removeAllImagesButton.setEnabled(true);
-        countSelectedImages.setText(Integer.toString(pictureList.size()));
+        Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        pickIntent.setType("image/*");
+
+        Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] {pickIntent});
+
+        startActivityForResult(chooserIntent, PICK_IMAGE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+
+            Uri imageUri = data.getData();
+            currentImage.setImageURI(imageUri);
+
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    //currentImage.setMaxHeight(imageHeight);
+                    //currentImage.setMaxWidth(imageWidth);
+                }
+            });
+            //currentImage.
+            //InputStream inputStream = getContentResolver().openInputStream(data.getData());
+
+            pictureList.add(new Picture(data.getData().toString()));
+
+            removeAllImagesButton.setTextColor(ContextCompat.getColor(this, R.color.black_overlay));
+            removeAllImagesButton.setEnabled(true);
+            countSelectedImages.setText(Integer.toString(pictureList.size()));
+            //TODO: action
+        }
     }
 
     public void removeAllImages(View v)
     {
+        currentImage.setImageResource(R.drawable.iss_64);
         pictureList.clear();
         countSelectedImages.setText("0");
         removeAllImagesButton.setTextColor(Color.WHITE);
         removeAllImagesButton.setEnabled(false);
     }
 
+    public boolean checkInput()
+    {
+        //try{
+            final long timestamp = Long.valueOf(timestampTextField.getText().toString());
+            final float lat = Float.valueOf(latitudeTextField.getText().toString());
+            final float lng = Float.valueOf(longtitudeTextField.getText().toString());
+        //} catch (IOException e){ }
+        return true;
+    }
+
     public void addOrUpdateEntry(View v)
     {
-        final long timestamp = Long.valueOf(timestampTextField.getText().toString());
-        final float lat = Float.valueOf(latitudeTextField.getText().toString());
-        final float lng = Float.valueOf(longtitudeTextField.getText().toString());
-        final String notes = notesTextField.getText().toString();
-
-
-        if(!isUpdateScreen)
+        if(checkInput())
         {
-            //add entry
-            currentObservation = new Observation(timestamp, lat, lng, notes);
+            final long timestamp = Long.valueOf(timestampTextField.getText().toString());
+            final float lat = Float.valueOf(latitudeTextField.getText().toString());
+            final float lng = Float.valueOf(longtitudeTextField.getText().toString());
+            final String notes = notesTextField.getText().toString();
 
-            ObservationsDatabase
-                    .getDatabase(this)
-                    .observationsDao()
-                    .insert(currentObservation);
-            //todo if picutres aviable, create inserts for them
+
+            if(!isUpdateScreen)
+            {
+                //add entry
+                currentObservation = new Observation(timestamp, lat, lng, notes);
+
+                ObservationsDatabase
+                        .getDatabase(this)
+                        .observationsDao()
+                        .insert(currentObservation);
+                //todo if picutres aviable, create inserts for them
+            }
+            else
+            {
+                //update entry
+                currentObservation.timestamp = timestamp;
+                currentObservation.lat = lat;
+                currentObservation.lng = lng;
+                currentObservation.notes = notes;
+
+                ObservationsDatabase.getDatabase(this)
+                        .observationsDao()
+                        .update(currentObservation);
+
+                //todo if pictures aviable, ceck if new one are possible/old ones got deleted
+
+                ObservationsActivity.INSTANCE.finish();
+            }
+
+            startActivity(new Intent(this, ObservationsActivity.class));
+            finish();
         }
-        else
-        {
-            //update entry
-            currentObservation.timestamp = timestamp;
-            currentObservation.lat = lat;
-            currentObservation.lng = lng;
-            currentObservation.notes = notes;
-
-            ObservationsDatabase.getDatabase(this)
-                    .observationsDao()
-                    .update(currentObservation);
-
-            //todo if pictures aviable, ceck if new one are possible/old ones got deleted
-
-            ObservationsActivity.INSTANCE.finish();
-        }
-
-        startActivity(new Intent(this, ObservationsActivity.class));
-        finish();
     }
 
     public void goBack(View v)
@@ -220,6 +282,9 @@ public class AddEditObservationActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
+
+        imageHeight = currentImage.getHeight();
+        imageWidth = currentImage.getWidth();
 
         if((getIntent().getStringExtra("updateEntryId")!=null))
         {

@@ -98,7 +98,6 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
                         android:layout_weight="4"
                         android:orientation="horizontal">
 
@@ -160,22 +159,21 @@
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="200dp"
                             android:orientation="vertical">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_alignParentRight="true"
                                 android:layout_gravity="center"
                                 android:layout_weight="1"
-                                android:background="@drawable/shape" >
+                                android:background="@drawable/shape">
 
                                 <ImageView
-                                    android:id="@+id/imageView2"
+                                    android:id="@+id/currentImage"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-
                                     android:layout_alignParentRight="true"
                                     android:layout_gravity="center"
                                     app:srcCompat="@drawable/iss_64" />
@@ -184,17 +182,20 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:paddingTop="4dp"
-                                android:orientation="horizontal">
+                                android:layout_weight="0"
+                                android:orientation="horizontal"
+                                android:paddingTop="4dp">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Selected images: " />
+
                                 <TextView
                                     android:id="@+id/countSelectedImages"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="-"/>
+                                    android:text="-" />
                             </LinearLayout>
                         </LinearLayout>
 

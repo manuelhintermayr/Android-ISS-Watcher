@@ -21,6 +21,10 @@ public class Picture {
     @PrimaryKey(autoGenerate = false)
     @NonNull
     public String picture_id;
+
+    public Picture(@NonNull String picture_id) {
+        this.picture_id = picture_id;
+    }
 }
 
 
