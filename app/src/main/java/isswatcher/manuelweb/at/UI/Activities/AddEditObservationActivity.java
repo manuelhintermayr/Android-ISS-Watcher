@@ -429,6 +429,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
                 .pictureDao()
                 .getAllEntries();
         boolean picturesInDatabase = totalPictureList.size()>0 ? true : false;
+        List<String> usedPictureNames = null;
 
         if(picturesInDatabase)
         {
@@ -437,12 +438,49 @@ public class AddEditObservationActivity extends AppCompatActivity {
             Object[] result = Arrays.stream(totalPictureArray).map(o -> convertUriStringToFileName(o.picture_id)).toArray();
             String[] pictureNameArray = Arrays.copyOf(result, result.length, String[].class);
 
-            List<String> usedPictureNames = Arrays.asList(pictureNameArray);
+            usedPictureNames = Arrays.asList(pictureNameArray);
         }
 
+        File[] imagesOnStorage = FileOperations.getStorageDirectory(AddEditObservationActivity.this).listFiles();
+        if(imagesOnStorage.length>0)
+        {
+            for(int i=0;i<imagesOnStorage.length;i++)
+            {
+                File currentFile = imagesOnStorage[i];
+                String fileName = currentFile.getName();
+                if(picturesInDatabase)
+                {
+                    if(!usedPictureNames.contains(fileName))
+                    {
+                        boolean result = currentFile.delete();
+                        if(!result)
+                        {
+                            throwCannotDeleteFileErrorMessage(currentFile);
+                        }
+                    }
+                }
+                else
+                {
+                    boolean result = currentFile.delete();
+                    if(!result)
+                    {
+                        throwCannotDeleteFileErrorMessage(currentFile);
+                    }
+                }
+            }
+        }
+    }
 
+    private void throwCannotDeleteFileErrorMessage(File file) {
+        AddEditObservationActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String errorMessage = "Could not delete the following file: "+file.getAbsolutePath();
+                Log.e("deleteFile", errorMessage);
 
-
+                Toast.makeText(AddEditObservationActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private String convertUriStringToFileName(String uriString)
