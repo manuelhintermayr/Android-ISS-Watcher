@@ -1,10 +1,14 @@
 package isswatcher.manuelweb.at.UI.Activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,16 +20,18 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.FileOperations;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
 import isswatcher.manuelweb.at.Services.Models.IssPeople;
@@ -246,6 +252,25 @@ public class LaunchActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case 1: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    String infoMessage = "Permissions granted!";
+                    Log.d("permissions", infoMessage);
+                    Toast.makeText(LaunchActivity.this, infoMessage, Toast.LENGTH_LONG).show();
+                } else {
+                    String errorMessage = "Permissions denied by the user. App might crash.";
+                    Log.e("permissions", errorMessage);
+                    Toast.makeText(LaunchActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
+        }
+    }
 
     public class InfoUpdate extends Thread {
         LaunchActivity mainActivity;
@@ -257,6 +282,7 @@ public class LaunchActivity extends AppCompatActivity {
         }
 
         public void run() {
+            checkForStoragePermission();
 
             while(true)
             {
@@ -290,6 +316,10 @@ public class LaunchActivity extends AppCompatActivity {
 
                 sleep();
             }
+        }
+
+        private void checkForStoragePermission() {
+            ActivityCompat.requestPermissions(LaunchActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
 
         public void sleep()

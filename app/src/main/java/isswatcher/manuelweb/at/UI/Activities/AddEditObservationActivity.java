@@ -1,6 +1,9 @@
 package isswatcher.manuelweb.at.UI.Activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,12 +11,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
@@ -28,14 +33,19 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.Services.FileOperations;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.DAO.ObservationsDao;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
@@ -167,42 +177,70 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     public void addImage(View v)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final AlertDialog dialog = builder
-                .setTitle("Image")
-                .setMessage("Choose the image location")
-                .setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                        addImageFromGallery();
-                    }
-                })
-                .setNegativeButton("Camera", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        addImageFromCamera();
-                    }
-                }).create();
+        if (ContextCompat.checkSelfPermission(AddEditObservationActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED) {
 
-        dialog.setOnShowListener( new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface arg0) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                params.setMargins(0,0,24,0);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            final AlertDialog dialog = builder
+                    .setTitle("Image")
+                    .setMessage("Choose the image location")
+                    .setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                            addImageFromGallery();
+                        }
+                    })
+                    .setNegativeButton("Camera", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            addImageFromCamera();
+                        }
+                    }).create();
 
-                Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            dialog.setOnShowListener( new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface arg0) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                    );
+                    params.setMargins(0,0,24,0);
 
-                negativeButton.setTextColor(Color.BLACK);
-                positiveButton.setTextColor(Color.BLACK);
-                negativeButton.setLayoutParams(params);
+                    Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                    Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+                    negativeButton.setTextColor(Color.BLACK);
+                    positiveButton.setTextColor(Color.BLACK);
+                    negativeButton.setLayoutParams(params);
+                }
+            });
+
+            dialog.show();
+
+        }
+        else{
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case 1: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    String infoMessage = "Permissions granted!";
+                    Log.d("permissions", infoMessage);
+                    Toast.makeText(this, infoMessage, Toast.LENGTH_LONG).show();
+                } else {
+                    String errorMessage = "Cannot add image without permission.";
+                    Log.e("permissions", errorMessage);
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                }
+                return;
             }
-        });
-
-        dialog.show();
+        }
     }
 
     private void addImageFromGallery()
@@ -223,8 +261,21 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private void addImageFromCamera()
     {
         Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(pictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+
+        File imageFile = null;
+        try {
+            imageFile = FileOperations.createNewImageTempFile(this);
+
+            Uri imageUri = Uri.fromFile(imageFile);
+
+            pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            pictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+            if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -236,17 +287,27 @@ public class AddEditObservationActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK && data != null && data.getExtras() != null) {
             Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
 
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String uriPath = MediaStore.Images.Media.insertImage(this.getContentResolver(), imageBitmap, "CameraPhoto", null);
 
-            currentImage.setImageBitmap(imageBitmap);
+            //try {
+                //String imgSaved=MediaStore.Images.Media.insertImage(getContentResolver(),mFile.getAbsolutePath(), , "drawing");
 
-            addImage(data.getData());
+                //ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                //imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                //String uriPath = MediaStore.Images.Media.insertImage(this.getContentResolver(), imageBitmap, "CameraPhoto", null);
+
+                //currentImage.setImageBitmap(imageBitmap);
+
+                Uri imageUri = data.getData();
+                addImage(imageUri);
+            //} catch (FileNotFoundException e) {
+            //    String errorMessage = "The following error occured: "+e.getMessage();
+
+            //    Log.e("savingImage", errorMessage);
+            //    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            //}
         }
 
         if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
-
             Uri imageUri = data.getData();
             addImage(imageUri);
         }
