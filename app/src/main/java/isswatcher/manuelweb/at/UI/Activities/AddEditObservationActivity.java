@@ -288,8 +288,20 @@ public class AddEditObservationActivity extends AppCompatActivity {
         }
 
         if (requestCode == PICK_IMAGE && resultCode == Activity.RESULT_OK && data != null) {
-            Uri imageUri = data.getData();
-            addImage(imageUri);
+            Uri originalImageUri = data.getData();
+            File newFile = null;
+            try {
+                newFile = FileOperations.copyFileIntoStorage(FileOperations.getRealPathFromUri(this, originalImageUri), this);
+
+                Uri imageUri = Uri.parse(newFile.getAbsolutePath());
+                addImage(imageUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+                String errorMessage = "The following error occured: "+e.getMessage();
+
+                Log.e("savingImage", errorMessage);
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -344,7 +356,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
                 .observationsDao()
                 .update(currentObservation);
 
-            //todo if pictures aviable, ceck if new one are possible/old ones got deleted
+            //todo if pictures aviable, check if new one are possible/old ones got deleted
 
             ObservationsActivity.INSTANCE.finish();
         }
