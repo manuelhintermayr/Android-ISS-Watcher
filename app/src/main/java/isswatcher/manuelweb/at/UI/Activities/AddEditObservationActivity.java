@@ -12,15 +12,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,22 +29,17 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.FileOperations;
 import isswatcher.manuelweb.at.Services.IssLiveData;
-import isswatcher.manuelweb.at.Services.Models.DAO.ObservationsDao;
 import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
 import isswatcher.manuelweb.at.Services.Models.Entities.Picture;
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
@@ -87,6 +79,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
     private Button addImageButton;
     private Button removeAllImagesButton;
     private ImageView currentImage;
+    private String lastPicturePath;
     private boolean isUpdateScreen = false;
     private Observation currentObservation;
     private List<Picture> pictureList;
@@ -260,23 +253,45 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
     private void addImageFromCamera()
     {
+        //https://android.jlelse.eu/androids-new-image-capture-from-a-camera-using-file-provider-dd178519a954
         Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (pictureIntent.resolveActivity(getPackageManager()) != null) {
 
-        File imageFile = null;
-        try {
-            imageFile = FileOperations.createNewImageTempFile(this);
-
-            Uri imageUri = Uri.fromFile(imageFile);
-
-            pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            pictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-
-            if(pictureIntent.resolveActivity(getPackageManager()) != null) {
-                startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+            File photoFile = null;
+            try {
+                photoFile = FileOperations.createNewImageTempFile(this);
+                lastPicturePath = photoFile.getAbsolutePath();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            Uri photoUri = FileProvider.getUriForFile(AddEditObservationActivity.this, AddEditObservationActivity.this.getPackageName() +".provider", photoFile);
+
+            pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
         }
+
+
+
+
+        //Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        //File imageFile = null;
+        //try {
+        //    imageFile = FileOperations.createNewImageTempFile(this);
+
+        //    Uri imageUri = Uri.fromFile(imageFile);
+
+        //    pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+        //    pictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+        //    if(pictureIntent.resolveActivity(getPackageManager()) != null) {
+        //        startActivityForResult(pictureIntent, REQUEST_CAPTURE_IMAGE);
+        //    }
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
     }
 
     @Override
@@ -284,9 +299,10 @@ public class AddEditObservationActivity extends AppCompatActivity {
     {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK && data != null && data.getExtras() != null) {
-            Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+        if (requestCode == REQUEST_CAPTURE_IMAGE && resultCode == RESULT_OK){ //&& data.getExtras() != null) {
+            //Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
 
+            //imageView.setImageURI(Uri.parse(imageFilePath));
 
             //try {
                 //String imgSaved=MediaStore.Images.Media.insertImage(getContentResolver(),mFile.getAbsolutePath(), , "drawing");
@@ -297,7 +313,7 @@ public class AddEditObservationActivity extends AppCompatActivity {
 
                 //currentImage.setImageBitmap(imageBitmap);
 
-                Uri imageUri = data.getData();
+                Uri imageUri = Uri.parse(lastPicturePath);
                 addImage(imageUri);
             //} catch (FileNotFoundException e) {
             //    String errorMessage = "The following error occured: "+e.getMessage();

@@ -258,15 +258,12 @@ public class LaunchActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case 1: {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    String infoMessage = "Permissions granted!";
-                    Log.d("permissions", infoMessage);
-                    Toast.makeText(LaunchActivity.this, infoMessage, Toast.LENGTH_LONG).show();
-                } else {
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     String errorMessage = "Permissions denied by the user. App might crash.";
                     Log.e("permissions", errorMessage);
                     Toast.makeText(LaunchActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                 }
+
                 return;
             }
         }
