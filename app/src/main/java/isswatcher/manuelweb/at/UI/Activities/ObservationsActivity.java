@@ -1,18 +1,25 @@
-package isswatcher.manuelweb.at;
+package isswatcher.manuelweb.at.UI.Activities;
 
 import android.annotation.SuppressLint;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import isswatcher.manuelweb.at.R;
+import isswatcher.manuelweb.at.UI.ObservationsViewAdapter;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity {
+public class ObservationsActivity extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -32,6 +39,10 @@ public class FullscreenActivity extends AppCompatActivity {
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
+    private RecyclerView recyclerView;
+    public ObservationsViewAdapter recyclerViewAdapter;
+    private LinearLayoutManager recyclerViewLayoutManager;
+    public static ObservationsActivity INSTANCE;
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -58,7 +69,7 @@ public class FullscreenActivity extends AppCompatActivity {
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
+            //mControlsView.setVisibility(View.VISIBLE);
         }
     };
     private boolean mVisible;
@@ -87,12 +98,15 @@ public class FullscreenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_fullscreen);
+        setContentView(R.layout.activity_observations);
+
+        INSTANCE = this;
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
-
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerViewLayoutManager = new LinearLayoutManager(this);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +119,34 @@ public class FullscreenActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.back_button).setOnTouchListener(mDelayHideTouchListener);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        recyclerViewAdapter = new ObservationsViewAdapter(this);
+
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+        recyclerView.setAdapter(recyclerViewAdapter);
+
+        recyclerViewAdapter.setOnItemClickListener(new ObservationsViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                recyclerViewAdapter.openEditOption(position);
+            }
+        });
+    }
+
+    public void addEntry(View view) {
+        startActivity(new Intent(this, AddEditObservationActivity.class));
+    }
+
+
+    public void goBack(View v)
+    {
+        finish();
     }
 
     @Override

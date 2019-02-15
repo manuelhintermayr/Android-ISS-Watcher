@@ -2,17 +2,58 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="isswatcher.manuelweb.at">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@android:style/Theme.Material.Light">
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB1ifwaDk-sgWAWkbVKSiyamy0_9ugViH0"/>
+
         <activity
-            android:name=".FullscreenActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:name=".UI.Activities.CurrentLocationActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/current_location_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme"></activity>
+        <activity
+            android:name=".UI.Activities.ObservationsActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/observations_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".UI.Activities.AddEditObservationActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/add_edit_observation_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".UI.Activities.MapActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/map_activity_title"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullscreenTheme" />
+        <activity
+            android:name=".UI.Activities.LaunchActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +61,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:authorities="${applicationId}.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"/>
+        </provider>
     </application>
 
 </manifest>
