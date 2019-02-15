@@ -1,6 +1,5 @@
 package isswatcher.manuelweb.at.Services.Models;
 
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

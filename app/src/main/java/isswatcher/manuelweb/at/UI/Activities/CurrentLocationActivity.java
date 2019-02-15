@@ -1,9 +1,7 @@
 package isswatcher.manuelweb.at.UI.Activities;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,17 +32,10 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.Locale;
 
 import androidx.core.app.ActivityCompat;
 import isswatcher.manuelweb.at.R;

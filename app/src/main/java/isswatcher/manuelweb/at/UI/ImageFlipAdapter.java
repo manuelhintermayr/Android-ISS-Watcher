@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import androidx.viewpager.widget.PagerAdapter;
-import isswatcher.manuelweb.at.R;
 import isswatcher.manuelweb.at.Services.Models.Entities.Picture;
 
 public class ImageFlipAdapter extends PagerAdapter {

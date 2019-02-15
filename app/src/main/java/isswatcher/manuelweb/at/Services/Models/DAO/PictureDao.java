@@ -6,7 +6,6 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import isswatcher.manuelweb.at.Services.Models.Entities.Observation;
 import isswatcher.manuelweb.at.Services.Models.Entities.Picture;
 
 @Dao

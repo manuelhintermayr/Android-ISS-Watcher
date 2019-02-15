@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
 import java.io.IOException;
-
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
 import isswatcher.manuelweb.at.Services.Models.IssPasses;
 import isswatcher.manuelweb.at.Services.Models.IssPeople;

@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import isswatcher.manuelweb.at.R;
-import isswatcher.manuelweb.at.Services.FileOperations;
 import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
 import isswatcher.manuelweb.at.Services.Models.IssPeople;

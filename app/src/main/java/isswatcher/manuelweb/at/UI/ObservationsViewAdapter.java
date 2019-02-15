@@ -82,7 +82,6 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
         if(pictureList.size()==0)
         {
             holder.imageFlipperWrap.setVisibility(View.GONE);
-            //holder.imageFlipper.setVisibility(View.GONE);
         }
         else
         {
