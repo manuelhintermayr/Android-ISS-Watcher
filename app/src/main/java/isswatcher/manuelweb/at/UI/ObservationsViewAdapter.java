@@ -168,6 +168,8 @@ public class ObservationsViewAdapter extends RecyclerView.Adapter<ObservationsVi
     }
 
     private void showUndoSnackbar() {
+        //used tutorial from https://medium.com/@zackcosborn/step-by-step-recyclerview-swipe-to-delete-and-undo-7bbae1fce27e 
+
         observationsActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

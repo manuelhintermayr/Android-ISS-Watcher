@@ -319,6 +319,8 @@ public class CurrentLocationActivity extends AppCompatActivity {
         }
 
         public void updateLocation() throws LocationNotEnabledException, LocationNotFoundException {
+            //based on tutorial from https://www.youtube.com/watch?v=lvcGh2ZgHeA
+
             getLocalNetworkLocation();
 
             mainActivity.runOnUiThread(new Runnable() {

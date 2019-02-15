@@ -40,6 +40,8 @@ import isswatcher.manuelweb.at.Services.IssLiveData;
 import isswatcher.manuelweb.at.Services.Models.IssLocation;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+    //used tutorial from https://www.youtube.com/playlist?list=PLgCYzUzKIBE-vInwQhGSdnbyJ62nixHCt
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -355,7 +357,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-
+    //for sliding animations on map, used tutorial from https://github.com/RameshbabuJaga/Android-Marker-Animation
     public class Animator implements Runnable {
         private static final int ANIMATE_SPEEED = 1500;
         private static final int ANIMATE_SPEEED_TURN = 1000;
