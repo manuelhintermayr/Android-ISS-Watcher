@@ -46,8 +46,7 @@
             android:layout_below="@+id/observationTime"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/shape">
+            android:layout_marginTop="16dp">
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/imageFlipper"
                 android:layout_width="match_parent"
